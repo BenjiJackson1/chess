@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -78,6 +79,45 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        if (getPieceType() == PieceType.PAWN){
+            return new PawnMovesCalculator().pieceMoves(board, myPosition);
+        }
+        if (getPieceType() == PieceType.BISHOP) return new BishopMovesCalculator().pieceMoves(board, myPosition);
+        return null;
+    }
+
+    public interface PieceMovesCalculator{
+        Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition);
+    }
+
+    public class PawnMovesCalculator implements PieceMovesCalculator{
+
+        @Override
+        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            Collection<ChessMove> pawnMoves = new ArrayList<ChessMove>();
+            return pawnMoves;
+        }
+    }
+
+    public class BishopMovesCalculator implements PieceMovesCalculator{
+
+        @Override
+        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            Collection<ChessMove> bishopMoves = new ArrayList<ChessMove>();
+            if (pieceColor == ChessGame.TeamColor.BLACK){
+                for (int i = myPosition.getColumn(); i < 7; i++) {
+                    bishopMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
+                            new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()+i), null));
+                }
+                for (int i = 7; i < myPosition.getColumn(); i--) {
+                    bishopMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
+                            new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()+i), null));
+                }
+            } else {
+
+            }
+            return bishopMoves;
+        }
     }
 }
+
