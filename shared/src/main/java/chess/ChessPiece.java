@@ -72,6 +72,17 @@ public class ChessPiece {
     }
 
     /**
+     * @return a bool of if the piece at the square is on the same team as this piece
+     */
+    private boolean getSameTeam(ChessBoard board, ChessPosition movePosition){
+        ChessPiece otherPiece = board.getPiece(new ChessPosition(movePosition.getRow(), movePosition.getColumn()));
+        if (otherPiece.pieceColor == pieceColor){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
