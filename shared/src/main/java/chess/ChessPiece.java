@@ -118,7 +118,7 @@ public class ChessPiece {
                         }
                     }
                     // capture diagonal right
-                    if (myPosition.getColumn()+1 > 8){
+                    if (myPosition.getColumn()+1 <= 8){
                         ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1));
                         if (piece != null && piece.pieceColor != pieceColor){
                             pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
@@ -204,7 +204,7 @@ public class ChessPiece {
                         }
                     }
                     // capture diagonal right
-                    if (myPosition.getColumn()+1 > 8){
+                    if (myPosition.getColumn()+1 <= 8){
                         ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1));
                         if (piece != null && piece.pieceColor != pieceColor){
                             pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
