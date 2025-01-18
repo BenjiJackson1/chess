@@ -89,7 +89,9 @@ public class ChessPiece {
     }
 
     public interface PieceMovesCalculator{
-        Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition);
+        default Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+            return null;
+        }
     }
 
     public class PawnMovesCalculator implements PieceMovesCalculator{
