@@ -50,8 +50,11 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> allMoves = new ArrayList<>();
+        Collection<ChessMove> allMoves;
         ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null){
+            return null;
+        }
         allMoves = piece.pieceMoves(board, startPosition);
         return allMoves;
     }
@@ -64,9 +67,13 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if (validMoves == null || piece.getTeamColor() != getTeamTurn()){
+            throw new InvalidMoveException();
+        }
         boolean canMakeMove = false;
         for (ChessMove individualMove: validMoves) {
-            if (move.equals(individualMove)){
+            if (move.equals(individualMove)) {
                 canMakeMove = true;
             }
         }
@@ -75,6 +82,11 @@ public class ChessGame {
         }
         else{
             board.movePiece(move);
+            if (getTeamTurn() == TeamColor.BLACK){
+                setTeamTurn(TeamColor.WHITE);
+            }else{
+                setTeamTurn(TeamColor.BLACK);
+            }
         }
     }
 

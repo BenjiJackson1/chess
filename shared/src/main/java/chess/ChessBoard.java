@@ -32,7 +32,12 @@ public class ChessBoard {
      */
     public void movePiece(ChessMove move) {
         ChessPiece piece = squares[move.getStartPosition().getRow()-1][8 - move.getStartPosition().getColumn()];
-        squares[move.getEndPosition().getRow()-1][8 - move.getEndPosition().getColumn()] = piece;
+        if (move.getPromotionPiece() != null){
+            ChessPiece promPiece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+            squares[move.getEndPosition().getRow()-1][8 - move.getEndPosition().getColumn()] = promPiece;
+        }else{
+            squares[move.getEndPosition().getRow()-1][8 - move.getEndPosition().getColumn()] = piece;
+        }
         squares[move.getStartPosition().getRow()-1][8 - move.getStartPosition().getColumn()] = null;
     }
 
