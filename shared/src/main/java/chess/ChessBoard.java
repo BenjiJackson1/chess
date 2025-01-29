@@ -25,6 +25,19 @@ public class ChessBoard {
     }
 
     /**
+     * Moves a chess piece to a new position
+     * Requires that this is a valid move to be made
+     *
+     * @param move  to be made on the board
+     */
+    public void movePiece(ChessMove move) {
+        ChessPiece piece = squares[move.getStartPosition().getRow()-1][8 - move.getStartPosition().getColumn()];
+        squares[move.getEndPosition().getRow()-1][8 - move.getEndPosition().getColumn()] = piece;
+        squares[move.getStartPosition().getRow()-1][8 - move.getStartPosition().getColumn()] = null;
+    }
+
+
+    /**
      * Gets a chess piece on the chessboard
      *
      * @param position The position to get the piece from
@@ -96,8 +109,7 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "squares=" + squares[0][0] +
+        return "ChessBoard{" + Arrays.toString(squares) +
                 '}';
     }
 }
