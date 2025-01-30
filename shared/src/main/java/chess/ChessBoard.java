@@ -9,9 +9,22 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares;
     public ChessBoard() {
-        
+        this.squares = new ChessPiece[8][8];
+    }
+
+    public ChessBoard(ChessBoard copy) {
+        this.squares= new ChessPiece[8][8];
+        for (int row=0; row<8; row++) {
+            for (int col=0; col<8; col++) {
+                if (copy.squares[row][col] != null) {
+                    this.squares[row][col] = new ChessPiece(copy.squares[row][col].getTeamColor(), copy.squares[row][col].getPieceType());
+                } else {
+                    this.squares[row][col] = null;
+                }
+            }
+        }
     }
 
     /**
