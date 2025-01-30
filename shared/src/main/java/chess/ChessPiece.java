@@ -367,7 +367,7 @@ public class ChessPiece {
                 if (piece != null && piece.pieceColor == pieceColor){
                     i = 10;
                 }
-                else if (piece != null && piece.pieceColor != pieceColor) {
+                else if (piece != null) {
                     rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), null));
                     i = 10;
@@ -383,7 +383,7 @@ public class ChessPiece {
                 if (piece != null && piece.pieceColor == pieceColor){
                     i = 10;
                 }
-                else if (piece != null && piece.pieceColor != pieceColor) {
+                else if (piece != null) {
                     rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), null));
                     i = 10;
@@ -399,7 +399,7 @@ public class ChessPiece {
                 if (piece != null && piece.pieceColor == pieceColor){
                     i = 10;
                 }
-                else if (piece != null && piece.pieceColor != pieceColor) {
+                else if (piece != null) {
                     rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow(), myPosition.getColumn()+i), null));
                     i = 10;
@@ -415,7 +415,7 @@ public class ChessPiece {
                 if (piece != null && piece.pieceColor == pieceColor){
                     i = 10;
                 }
-                else if (piece != null && piece.pieceColor != pieceColor) {
+                else if (piece != null) {
                     rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow(), myPosition.getColumn()-i), null));
                     i = 10;
@@ -436,7 +436,7 @@ public class ChessPiece {
             // Up Left
             if (myPosition.getRow() + 2 <= 8 && myPosition.getColumn()-1 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+2, myPosition.getColumn()-1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()+2, myPosition.getColumn()-1), null));
                 }
@@ -444,7 +444,7 @@ public class ChessPiece {
             // Up Right
             if (myPosition.getRow() + 2 <= 8 && myPosition.getColumn()+1 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+2, myPosition.getColumn()+1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()+2, myPosition.getColumn()+1), null));
                 }
@@ -452,7 +452,7 @@ public class ChessPiece {
             // Down Left
             if (myPosition.getRow() - 2 >= 1 && myPosition.getColumn()-1 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-2, myPosition.getColumn()-1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()-2, myPosition.getColumn()-1), null));
                 }
@@ -460,7 +460,7 @@ public class ChessPiece {
             // Down Right
             if (myPosition.getRow() - 2 >= 1 && myPosition.getColumn()+1 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-2, myPosition.getColumn()+1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()-2, myPosition.getColumn()+1), null));
                 }
@@ -468,7 +468,7 @@ public class ChessPiece {
             // Left Up
             if (myPosition.getRow() + 1 <= 8 && myPosition.getColumn()-2 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-2));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-2), null));
                 }
@@ -476,7 +476,7 @@ public class ChessPiece {
             // Left Down
             if (myPosition.getRow() - 1 >= 1 && myPosition.getColumn()-2 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-2));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-2), null));
                 }
@@ -484,7 +484,7 @@ public class ChessPiece {
             // Right Up
             if (myPosition.getRow() + 1 <= 8 && myPosition.getColumn()+2 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+2));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+2), null));
                 }
@@ -492,7 +492,7 @@ public class ChessPiece {
             // Right Down
             if (myPosition.getRow() - 1 >= 1 && myPosition.getColumn()+2 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+2));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     knightMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+2), null));
                 }
@@ -507,9 +507,7 @@ public class ChessPiece {
         public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
             Collection<ChessMove> queenMoves = new RookMovesCalculator().pieceMoves(board, myPosition);
             Collection<ChessMove> bishopMoves = new BishopMovesCalculator().pieceMoves(board, myPosition);
-            for (ChessMove move: bishopMoves){
-                queenMoves.add(move);
-            }
+            queenMoves.addAll(bishopMoves);
             return queenMoves;
         }
     }
@@ -521,7 +519,7 @@ public class ChessPiece {
             // Up
             if (myPosition.getRow() + 1 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()), null));
                 }
@@ -529,7 +527,7 @@ public class ChessPiece {
             // Up Left
             if (myPosition.getRow() + 1 <= 8 && myPosition.getColumn()-1 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1), null));
                 }
@@ -537,7 +535,7 @@ public class ChessPiece {
             // Up Right
             if (myPosition.getRow() + 1 <= 8 && myPosition.getColumn()+1 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1), null));
                 }
@@ -545,7 +543,7 @@ public class ChessPiece {
             // Down Left
             if (myPosition.getRow() - 1 >= 1 && myPosition.getColumn()-1 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1), null));
                 }
@@ -553,7 +551,7 @@ public class ChessPiece {
             // Down Right
             if (myPosition.getRow() - 1 >= 1 && myPosition.getColumn()+1 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1), null));
                 }
@@ -561,7 +559,7 @@ public class ChessPiece {
             // Down
             if (myPosition.getRow() - 1 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()), null));
                 }
@@ -569,7 +567,7 @@ public class ChessPiece {
             // Left
             if (myPosition.getColumn()-1 >= 1) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1), null));
                 }
@@ -577,7 +575,7 @@ public class ChessPiece {
             // Right
             if (myPosition.getColumn()+1 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn()+1));
-                if ((piece != null && piece.pieceColor != pieceColor) || piece == null) {
+                if (piece == null || piece.pieceColor != pieceColor) {
                     kingMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow(), myPosition.getColumn()+1), null));
                 }

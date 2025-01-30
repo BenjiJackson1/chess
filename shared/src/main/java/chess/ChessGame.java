@@ -88,7 +88,7 @@ public class ChessGame {
                 canMakeMove = true;
             }
         }
-        if (canMakeMove == false){
+        if (!canMakeMove){
             throw new InvalidMoveException();
         }
         else{
@@ -119,7 +119,8 @@ public class ChessGame {
             int row = (i/8)+1;
             int col = (i%8)+1;
             ChessPiece piece = board.getPiece(new ChessPosition(row, col));
-            if (piece != null && (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor)){
+            if (piece != null && (piece.getPieceType() == ChessPiece.PieceType.KING &&
+                    piece.getTeamColor() == teamColor)){
                 kingPosition = new ChessPosition(row, col);
             }
             if (piece != null && piece.getTeamColor() != teamColor){
@@ -147,7 +148,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor) == false){
+        if (!isInCheck(teamColor)){
             return false;
         }
         Collection<ChessPosition> allyPieces = new ArrayList<>();

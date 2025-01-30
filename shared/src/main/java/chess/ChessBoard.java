@@ -19,7 +19,8 @@ public class ChessBoard {
         for (int row=0; row<8; row++) {
             for (int col=0; col<8; col++) {
                 if (copy.squares[row][col] != null) {
-                    this.squares[row][col] = new ChessPiece(copy.squares[row][col].getTeamColor(), copy.squares[row][col].getPieceType());
+                    this.squares[row][col] = new ChessPiece(copy.squares[row][col].getTeamColor(),
+                            copy.squares[row][col].getPieceType());
                 } else {
                     this.squares[row][col] = null;
                 }
