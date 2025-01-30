@@ -63,7 +63,7 @@ public class ChessGame {
             ChessGame testGame = new ChessGame();
             testGame.setBoard(testBoard);
             testGame.setTeamTurn(getTeamTurn());
-            if (!testGame.isInCheck(getTeamTurn())){
+            if (!testGame.isInCheck(board.getPiece(move.getStartPosition()).getTeamColor())){
                 retMoves.add(move);
             }
         }
