@@ -80,10 +80,10 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (getPieceType() == PieceType.PAWN)return new PawnMovesCalculator().pieceMoves(board, myPosition);
-        if (getPieceType() == PieceType.BISHOP) return new BishopMovesCalculator().pieceMoves(board, myPosition);
-        if (getPieceType() == PieceType.ROOK) return new RookMovesCalculator().pieceMoves(board, myPosition);
+        if (getPieceType() == PieceType.BISHOP) return new chess.BishopMovesCalculator(this).pieceMoves(board, myPosition);
+        if (getPieceType() == PieceType.ROOK) return new chess.RookMovesCalculator(this).pieceMoves(board, myPosition);
         if (getPieceType() == PieceType.KNIGHT) return new KnightMovesCalculator().pieceMoves(board, myPosition);
-        if (getPieceType() == PieceType.QUEEN) return new QueenMovesCalculator().pieceMoves(board, myPosition);
+        if (getPieceType() == PieceType.QUEEN) return new chess.QueenMovesCalculator(this).pieceMoves(board, myPosition);
         if (getPieceType() == PieceType.KING) return new KingMovesCalculator().pieceMoves(board, myPosition);
         return null;
     }
@@ -277,158 +277,6 @@ public class ChessPiece {
         }
     }
 
-    public class BishopMovesCalculator implements PieceMovesCalculator{
-        @Override
-        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            Collection<ChessMove> bishopMoves = new ArrayList<>();
-            // Left Up
-            for (int i = 1; i < myPosition.getColumn(); i++) {
-                if (myPosition.getRow()+i <= 8 && myPosition.getColumn()-i > 0){
-                    ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()-i));
-                    if (piece != null && piece.getTeamColor() != getTeamColor()){
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+i,
-                                myPosition.getColumn()-i), null));
-                        i = 10;
-                    }
-                    else if (piece != null && piece.getTeamColor() == getTeamColor()){
-                        i = 10;
-                    }
-                    else {
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+i,
-                                myPosition.getColumn()-i), null));
-                    }
-                }
-            }
-            // Right Up
-            for (int i = 1; i <= 8 - myPosition.getColumn(); i++) {
-                if (myPosition.getRow()+i <= 8 && myPosition.getColumn()+i <= 8){
-                    ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()+i));
-                    if (piece != null && piece.getTeamColor() != getTeamColor()){
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+i,
-                                myPosition.getColumn()+i), null));
-                        i = 10;
-                    }
-                    else if (piece != null && piece.getTeamColor() == getTeamColor()){
-                        i = 10;
-                    }
-                    else {
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+i,
-                                myPosition.getColumn()+i), null));
-                    }
-                }
-            }
-            // Right Down
-            for (int i = 1; i <= 8 - myPosition.getColumn(); i++) {
-                if (myPosition.getRow()-i > 0 && myPosition.getColumn()+i <= 8){
-                    ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()+i));
-                    if (piece != null && piece.getTeamColor() != getTeamColor()){
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()-i,
-                                myPosition.getColumn()+i), null));
-                        i = 10;
-                    }
-                    else if (piece != null && piece.getTeamColor() == getTeamColor()){
-                        i = 10;
-                    }
-                    else {
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()-i,
-                                myPosition.getColumn()+i), null));
-                    }
-                }
-            }
-            // Left Down
-            for (int i = 1; i < myPosition.getColumn(); i++) {
-                if (myPosition.getRow()-i > 0 && myPosition.getColumn()-i > 0){
-                    ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()-i));
-                    if (piece != null && piece.getTeamColor() != getTeamColor()){
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()-i,
-                                myPosition.getColumn()-i), null));
-                        i = 10;
-                    }
-                    else if (piece != null && piece.getTeamColor() == getTeamColor()){
-                        i = 10;
-                    }
-                    else {
-                        bishopMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()-i,
-                                myPosition.getColumn()-i), null));
-                    }
-                }
-            }
-            return bishopMoves;
-        }
-    }
-
-    public class RookMovesCalculator implements PieceMovesCalculator{
-        @Override
-        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            Collection<ChessMove> rookMoves = new ArrayList<>();
-            // Up
-            for (int i = 1; i <= 8 - myPosition.getRow(); i++) {
-                ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()));
-                if (piece != null && piece.pieceColor == pieceColor){
-                    i = 10;
-                }
-                else if (piece != null) {
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), null));
-                    i = 10;
-                }
-                else{
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), null));
-                }
-            }
-            // Down
-            for (int i = 1; i < myPosition.getRow(); i++) {
-                ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()));
-                if (piece != null && piece.pieceColor == pieceColor){
-                    i = 10;
-                }
-                else if (piece != null) {
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), null));
-                    i = 10;
-                }
-                else {
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), null));
-                }
-            }
-            // Right
-            for (int i = 1; i <= 8 - myPosition.getColumn(); i++) {
-                ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn()+i));
-                if (piece != null && piece.pieceColor == pieceColor){
-                    i = 10;
-                }
-                else if (piece != null) {
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow(), myPosition.getColumn()+i), null));
-                    i = 10;
-                }
-                else {
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i), null));
-                }
-            }
-            // Left
-            for (int i = 1; i < myPosition.getColumn(); i++) {
-                ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn()-i));
-                if (piece != null && piece.pieceColor == pieceColor){
-                    i = 10;
-                }
-                else if (piece != null) {
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow(), myPosition.getColumn()-i), null));
-                    i = 10;
-                }
-                else {
-                    rookMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i), null));
-                }
-            }
-            return rookMoves;
-        }
-    }
-
     public class KnightMovesCalculator implements PieceMovesCalculator {
         @Override
         public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
@@ -500,16 +348,6 @@ public class ChessPiece {
             return knightMoves;
         }
 
-    }
-
-    public class QueenMovesCalculator implements PieceMovesCalculator {
-        @Override
-        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            Collection<ChessMove> queenMoves = new RookMovesCalculator().pieceMoves(board, myPosition);
-            Collection<ChessMove> bishopMoves = new BishopMovesCalculator().pieceMoves(board, myPosition);
-            queenMoves.addAll(bishopMoves);
-            return queenMoves;
-        }
     }
 
     public class KingMovesCalculator implements PieceMovesCalculator {
