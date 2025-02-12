@@ -151,15 +151,7 @@ public class ChessGame {
         if (!isInCheck(teamColor)){
             return false;
         }
-        Collection<ChessPosition> allyPieces = new ArrayList<>();
-        for (int i = 0; i < 64; i++) {
-            int row = (i/8)+1;
-            int col = (i%8)+1;
-            ChessPiece piece = board.getPiece(new ChessPosition(row, col));
-            if (piece != null && piece.getTeamColor() == teamColor){
-                allyPieces.add(new ChessPosition(row, col));
-            }
-        }
+        Collection<ChessPosition> allyPieces = allyPieceFinder(teamColor);
         for (ChessPosition position: allyPieces) {
             ChessPiece piece = board.getPiece(position);
             Collection<ChessMove> validMoves = piece.pieceMoves(board, position);
@@ -176,6 +168,19 @@ public class ChessGame {
         return true;
     }
 
+    private Collection<ChessPosition> allyPieceFinder(TeamColor teamColor){
+        Collection<ChessPosition> allyPieces = new ArrayList<>();
+        for (int i = 0; i < 64; i++) {
+            int row = (i/8)+1;
+            int col = (i%8)+1;
+            ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+            if (piece != null && piece.getTeamColor() == teamColor){
+                allyPieces.add(new ChessPosition(row, col));
+            }
+        }
+        return allyPieces;
+    }
+
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
@@ -187,15 +192,7 @@ public class ChessGame {
         if (isInCheckmate(teamColor)){
             return false;
         }
-        Collection<ChessPosition> allyPieces = new ArrayList<>();
-        for (int i = 0; i < 64; i++) {
-            int row = (i/8)+1;
-            int col = (i%8)+1;
-            ChessPiece piece = board.getPiece(new ChessPosition(row, col));
-            if (piece != null && piece.getTeamColor() == teamColor){
-                allyPieces.add(new ChessPosition(row, col));
-            }
-        }
+        Collection<ChessPosition> allyPieces = allyPieceFinder(teamColor);
         int validMoveNumber = 0;
         for (ChessPosition position: allyPieces) {
             ChessPiece piece = board.getPiece(position);
