@@ -18,15 +18,14 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> pawnMoves = new ArrayList<>();
-        // Black pawn logic
+        Collection<ChessMove> pawnMoves;
         if (mypiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             pawnMoves = pieceMovesBlack(board, myPosition);
         }
         else {
             pawnMoves = pieceMovesWhite(board, myPosition);
         }
-            return pawnMoves;
+        return pawnMoves;
         }
 
 
