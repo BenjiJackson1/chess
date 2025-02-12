@@ -156,8 +156,7 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
                     pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()), ChessPiece.PieceType.KNIGHT));
                 } else {
-                    pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()), null));
+                    addPawnMove(pawnMoves, myPosition, -1, 0);
                 }
 
             }
@@ -175,8 +174,7 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
                         pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                                 new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                                new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1), null));
+                        addPawnMove(pawnMoves, myPosition, -1, -1);
                     }
                 }
             }
@@ -194,8 +192,7 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
                         pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                                 new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                                new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1), null));
+                        addPawnMove(pawnMoves, myPosition, -1, 1);
                     }
                 }
             }
