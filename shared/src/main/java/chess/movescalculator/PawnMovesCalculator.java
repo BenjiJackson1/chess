@@ -28,6 +28,13 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
         return pawnMoves;
         }
 
+    private void addPawnMove(Collection<ChessMove> pawnMoves, ChessPosition myPosition, int row, int col) {
+        pawnMoves.add(new ChessMove(
+                new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
+                new ChessPosition(myPosition.getRow() + row, myPosition.getColumn() + col),
+                null
+        ));
+    }
 
     private Collection<ChessMove> pieceMovesWhite(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> pawnMoves = new ArrayList<>();
@@ -36,24 +43,21 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
                 pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                         new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), null));
                 if (board.getPiece(new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn())) == null) {
-                    pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn()), null));
+                    addPawnMove(pawnMoves, myPosition, 2, 0);
                 }
             }
             // capture diagonal left
             if (myPosition.getColumn() - 1 > 0) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1));
                 if (piece != null && piece.getTeamColor() != mypiece.getTeamColor()) {
-                    pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), null));
+                    addPawnMove(pawnMoves, myPosition, 1, -1);
                 }
             }
             // capture diagonal right
             if (myPosition.getColumn() + 1 <= 8) {
                 ChessPiece piece = board.getPiece(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1));
                 if (piece != null && piece.getTeamColor() != mypiece.getTeamColor()) {
-                    pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), null));
+                    addPawnMove(pawnMoves, myPosition, 1, 1);
                 }
             }
         } else {
@@ -68,8 +72,7 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
                     pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                             new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), ChessPiece.PieceType.KNIGHT));
                 } else {
-                    pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                            new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), null));
+                    addPawnMove(pawnMoves, myPosition, 1, 0);
                 }
 
             }
@@ -87,8 +90,7 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
                         pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                                 new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                                new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), null));
+                        addPawnMove(pawnMoves, myPosition, 1, -1);
                     }
                 }
             }
@@ -106,8 +108,7 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
                         pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
                                 new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), ChessPiece.PieceType.KNIGHT));
                     } else {
-                        pawnMoves.add(new ChessMove(new ChessPosition(myPosition.getRow(), myPosition.getColumn()),
-                                new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), null));
+                        addPawnMove(pawnMoves, myPosition, 1, 1);
                     }
                 }
             }
@@ -202,5 +203,4 @@ public class PawnMovesCalculator implements ChessPiece.PieceMovesCalculator {
 
         return pawnMoves;
     }
-
 }
