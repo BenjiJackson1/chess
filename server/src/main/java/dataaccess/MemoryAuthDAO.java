@@ -16,4 +16,8 @@ public class MemoryAuthDAO implements AuthDAO{
         AuthData authData = new AuthData(UUID.randomUUID().toString(), userName);
         return authData;
     }
+
+    public void deleteAllAuth() throws DataAccessException {
+        allAuth.clear();
+    }
 }
