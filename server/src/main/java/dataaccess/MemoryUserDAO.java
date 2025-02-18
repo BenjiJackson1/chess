@@ -2,14 +2,18 @@ package dataaccess;
 
 import model.UserData;
 
+import java.util.HashMap;
+
 public class MemoryUserDAO implements UserDAO{
-    @Override
+    final private HashMap<String, UserData> allUsers = new HashMap<>();
+
     public UserData getUserData(String username) throws DataAccessException {
-        return null;
+        return allUsers.get(username);
     }
 
-    @Override
-    public void addUserData(UserData userData) throws DataAccessException {
-
+    public UserData addUserData(UserData userData) throws DataAccessException {
+        UserData user = new UserData(userData.username(), userData.password(), userData.password());
+        allUsers.put(user.username(), user);
+        return user;
     }
 }
