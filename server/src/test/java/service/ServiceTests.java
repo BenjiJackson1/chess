@@ -1,6 +1,8 @@
 package service;
 
 import chess.ChessGame;
+import model.request.RegisterRequest;
+import model.result.RegisterResult;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
@@ -15,8 +17,12 @@ public class ServiceTests {
 
     @Test
     @Order(1)
-    @DisplayName("Register Positive")
-    public void register() {
-
+    @DisplayName("Register Success")
+    public void registerSuccess() {
+        UserService userService = new UserService();
+        RegisterResult registerResult = userService.register(new RegisterRequest("benji55", "passw0rd", "benji55@byu.edu"));
+        Assertions.assertNull(registerResult.message(), "Bad result returned an error message");
+        Assertions.assertNotNull(registerResult.authToken(), "Auth Token was not generated in registration");
+        Assertions.assertNotNull(registerResult.username(), "RegisterResult was not formatted correctly");
     }
 }
