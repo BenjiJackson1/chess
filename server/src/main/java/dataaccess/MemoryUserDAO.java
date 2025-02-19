@@ -12,7 +12,10 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     public UserData createUser(UserData userData) throws DataAccessException {
-        UserData user = new UserData(userData.username(), userData.password(), userData.password());
+        UserData user = new UserData(userData.username(), userData.password(), userData.email());
+        if (allUsers.containsKey(userData.username())){
+            throw new DataAccessException("Error: already taken");
+        }
         allUsers.put(user.username(), user);
         return user;
     }
