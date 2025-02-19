@@ -60,4 +60,16 @@ public class ServiceTests {
         Assertions.assertEquals(loginResult.message(), "Error: unauthorized", "Incorrect error message returned");
     }
 
+    @Test
+    @Order(5)
+    @DisplayName("Clear Test")
+    public void clearTest() {
+        UserService userService = new UserService();
+        userService.register(new RegisterRequest("benji55", "passw0rd", "benji55@byu.edu"));
+        userService.login(new LoginRequest("benji55", "passw0rd"));
+        userService.clear();
+        LoginResult loginResult = userService.login(new LoginRequest("benji55", "passw0rd"));
+        Assertions.assertNotNull(userService, "Login Result did not return an error message");
+        Assertions.assertEquals(loginResult.message(), "Error: unauthorized", "Incorrect error message returned");
+    }
 }
