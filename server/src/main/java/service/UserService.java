@@ -46,4 +46,8 @@ public class UserService {
         }
         return new LoginResult(userData.username(), authData.authToken(), null);
     }
+
+    public void clear(){
+        userDAO.deleteAllUsers();
+    }
 }

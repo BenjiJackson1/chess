@@ -23,7 +23,7 @@ public class MemoryUserDAO implements UserDAO{
         return user;
     }
 
-    public void deleteAllUsers() throws DataAccessException {
+    public void deleteAllUsers(){
         allUsers.clear();
     }
 
