@@ -2,8 +2,10 @@ package service;
 
 import chess.ChessGame;
 import model.request.LoginRequest;
+import model.request.LogoutRequest;
 import model.request.RegisterRequest;
 import model.result.LoginResult;
+import model.result.LogoutResult;
 import model.result.RegisterResult;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
@@ -71,5 +73,26 @@ public class ServiceTests {
         LoginResult loginResult = userService.login(new LoginRequest("benji55", "passw0rd"));
         Assertions.assertNotNull(userService, "Login Result did not return an error message");
         Assertions.assertEquals(loginResult.message(), "Error: unauthorized", "Incorrect error message returned");
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Login Success")
+    public void logoutSuccess() {
+        UserService userService = new UserService();
+        userService.register(new RegisterRequest("benji55", "passw0rd", "benji55@byu.edu"));
+        LoginResult loginResult = userService.login(new LoginRequest("benji55", "passw0rd"));
+        LogoutResult logoutResult = userService.logout(new LogoutRequest(loginResult.authToken()));
+        Assertions.assertNull(logoutResult.message(), "Logout Result returned an error message");
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Login Failure For Non-Existing User")
+    public void logoutFailure() {
+        UserService userService = new UserService();
+        LogoutResult logoutResult = userService.logout(new LogoutRequest("benji55"));
+        Assertions.assertNotNull(logoutResult.message(), "Login Result did not return an error message");
+        Assertions.assertEquals(logoutResult.message(), "Error: unauthorized", "Incorrect error message returned");
     }
 }
