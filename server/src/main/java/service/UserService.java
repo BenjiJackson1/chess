@@ -11,6 +11,9 @@ public class UserService {
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
     public RegisterResult register(RegisterRequest registerRequest){
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null){
+            return new RegisterResult(null, null, "Error: bad request");
+        }
         UserData userData;
         try {
             userData = userDAO.createUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));

@@ -34,9 +34,17 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object register(Request req, Response res) throws DataAccessException {
+    private Object register(Request req, Response res){
         var user = new Gson().fromJson(req.body(), UserData.class);
         RegisterResult thisUser = userService.register(new RegisterRequest(user.username(), user.password(), user.email()));
+        if (thisUser.message() != null && thisUser.message() == "Error: already taken"){
+            res.status(403);
+            return new Gson().toJson(thisUser);
+        }
+        if (thisUser.message() != null && thisUser.message() == "Error: bad request"){
+            res.status(400);
+            return new Gson().toJson(thisUser);
+        }
         return new Gson().toJson(thisUser);
     }
 }
