@@ -25,4 +25,14 @@ public class ServiceTests {
         Assertions.assertNotNull(registerResult.authToken(), "Auth Token was not generated in registration");
         Assertions.assertNotNull(registerResult.username(), "RegisterResult was not formatted correctly");
     }
+    @Test
+    @Order(2)
+    @DisplayName("Register Failure")
+    public void registerFailure() {
+        UserService userService = new UserService();
+        RegisterResult registerResultOriginal = userService.register(new RegisterRequest("benji55", "passw0rd", "benji55@byu.edu"));
+        RegisterResult registerResultCopy = userService.register(new RegisterRequest("benji55", "passw0rd", "benji55@byu.edu"));
+        Assertions.assertNotNull(registerResultCopy.message(), "RegisterResult did not return an error message");
+        Assertions.assertEquals(registerResultCopy.message(), "Error: already taken", "Incorrect error message was returned");
+    }
 }
