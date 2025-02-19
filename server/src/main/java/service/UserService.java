@@ -4,8 +4,10 @@ import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import model.request.LoginRequest;
+import model.request.LogoutRequest;
 import model.request.RegisterRequest;
 import model.result.LoginResult;
+import model.result.LogoutResult;
 import model.result.RegisterResult;
 
 public class UserService {
@@ -47,7 +49,17 @@ public class UserService {
         return new LoginResult(userData.username(), authData.authToken(), null);
     }
 
+    public LogoutResult logout(LogoutRequest logoutRequest){
+        try {
+            authDAO.deleteAuth(logoutRequest.authToken());
+        } catch (DataAccessException e) {
+            return new LogoutResult(e.getMessage());
+        }
+        return new LogoutResult(null);
+    }
+
     public void clear(){
         userDAO.deleteAllUsers();
+        authDAO.deleteAllAuth();
     }
 }
