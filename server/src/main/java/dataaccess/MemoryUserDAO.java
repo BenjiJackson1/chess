@@ -7,7 +7,10 @@ import java.util.HashMap;
 public class MemoryUserDAO implements UserDAO{
     final private HashMap<String, UserData> allUsers = new HashMap<>();
 
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username, String password) throws DataAccessException {
+        if (!allUsers.containsKey(username) || (!allUsers.get(username).password().equals(password))){
+            throw new DataAccessException("Error: unauthorized");
+        }
         return allUsers.get(username);
     }
 

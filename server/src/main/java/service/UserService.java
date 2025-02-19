@@ -3,7 +3,9 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import model.request.LoginRequest;
 import model.request.RegisterRequest;
+import model.result.LoginResult;
 import model.result.RegisterResult;
 
 public class UserService {
@@ -27,5 +29,21 @@ public class UserService {
             return new RegisterResult(null, null, e.getMessage());
         }
         return new RegisterResult(userData.username(), authData.authToken(), null);
+    }
+
+    public LoginResult login(LoginRequest loginRequest){
+        UserData userData;
+        try {
+            userData = userDAO.getUser(loginRequest.username(), loginRequest.password());
+        } catch (DataAccessException e) {
+            return new LoginResult(null, null, e.getMessage());
+        }
+        AuthData authData;
+        try {
+            authData = authDAO.createAuth(loginRequest.username());
+        } catch (DataAccessException e) {
+            return new LoginResult(null, null, e.getMessage());
+        }
+        return new LoginResult(userData.username(), authData.authToken(), null);
     }
 }
