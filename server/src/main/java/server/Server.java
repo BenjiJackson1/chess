@@ -4,19 +4,24 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import model.GameData;
+import model.request.CreateGameRequest;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
 import model.request.RegisterRequest;
 import model.result.*;
 import model.result.RegisterResult;
+import service.GameService;
 import service.UserService;
 import spark.*;
 
 public class Server {
     private final UserService userService;
+    private final GameService gameService;
 
     public Server() {
         this.userService = new UserService();
+        this.gameService = new GameService();
     }
 
     public int run(int desiredPort) {
@@ -29,6 +34,7 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/db", this::clear);
         Spark.delete("/session", this::logout);
+        Spark.post("/game", this::createGame);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -44,11 +50,11 @@ public class Server {
     private Object register(Request req, Response res){
         var user = new Gson().fromJson(req.body(), UserData.class);
         RegisterResult thisUser = userService.register(new RegisterRequest(user.username(), user.password(), user.email()));
-        if (thisUser.message() != null && thisUser.message() == "Error: already taken"){
+        if (thisUser.message() != null && thisUser.message().equals("Error: already taken")){
             res.status(403);
             return new Gson().toJson(thisUser);
         }
-        if (thisUser.message() != null && thisUser.message() == "Error: bad request"){
+        if (thisUser.message() != null && thisUser.message().equals("Error: bad request")){
             res.status(400);
             return new Gson().toJson(thisUser);
         }
@@ -58,7 +64,7 @@ public class Server {
     private Object login(Request req, Response res){
         var user = new Gson().fromJson(req.body(), UserData.class);
         LoginResult loginUser = userService.login(new LoginRequest(user.username(), user.password()));
-        if (loginUser.message() != null && loginUser.message() == "Error: unauthorized"){
+        if (loginUser.message() != null && loginUser.message().equals("Error: unauthorized")){
             res.status(401);
             return new Gson().toJson(loginUser);
         }
@@ -68,7 +74,7 @@ public class Server {
     private Object logout(Request req, Response res){
         var auth = req.headers("Authorization");
         LogoutResult logoutResult = userService.logout(new LogoutRequest(auth));
-        if (logoutResult.message() != null && logoutResult.message() == "Error: unauthorized"){
+        if (logoutResult.message() != null && logoutResult.message().equals("Error: unauthorized")){
             res.status(401);
             return new Gson().toJson(logoutResult);
         }
@@ -79,5 +85,21 @@ public class Server {
         userService.clear();
         // TODO: replace with generic result class
         return new Gson().toJson(new LogoutResult(null));
+    }
+
+    private Object createGame(Request req, Response res){
+        var auth = req.headers("Authorization");
+        boolean authorized = userService.getAuth(auth);
+        if (!authorized){
+            res.status(401);
+            return new Gson().toJson(new CreateGameResult(null, "Error: unauthorized"));
+        }
+        var game = new Gson().fromJson(req.body(), GameData.class);
+        if (game.gameName() == null){
+            res.status(400);
+            return new Gson().toJson(new CreateGameResult(null, "Error: bad request"));
+        }
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(game.gameName()));
+        return new Gson().toJson(createGameResult);
     }
 }

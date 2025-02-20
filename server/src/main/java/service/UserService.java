@@ -14,6 +14,15 @@ public class UserService {
     private final UserDAO userDAO = new MemoryUserDAO();
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
+    public boolean getAuth(String authToken){
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            return false;
+        }
+        return true;
+    }
+
     public RegisterResult register(RegisterRequest registerRequest){
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null){
             return new RegisterResult(null, null, "Error: bad request");

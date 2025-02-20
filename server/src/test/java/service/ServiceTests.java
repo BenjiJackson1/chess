@@ -8,13 +8,6 @@ import model.result.LoginResult;
 import model.result.LogoutResult;
 import model.result.RegisterResult;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import server.Server;
-
-import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Locale;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTests {

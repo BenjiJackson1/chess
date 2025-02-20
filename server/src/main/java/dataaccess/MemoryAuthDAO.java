@@ -9,6 +9,9 @@ public class MemoryAuthDAO implements AuthDAO{
     final private HashMap<String, AuthData> allAuth = new HashMap<>();
 
     public AuthData getAuth(String authToken) throws DataAccessException {
+        if (!allAuth.containsKey(authToken)){
+            throw new DataAccessException("Error: unauthorized");
+        }
         return allAuth.get(authToken);
     }
 
