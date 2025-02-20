@@ -17,6 +17,21 @@ public class MemoryGameDAO implements GameDAO{
         return gameData;
     }
 
+    public GameData getGame(Integer gameID) throws DataAccessException{
+        if (!allGames.containsKey(gameID)){
+            throw new DataAccessException("Error: bad request");
+        }
+        return allGames.get(gameID);
+    }
+
+    public GameData updateGame(Integer gameID, GameData updatedGameData) throws DataAccessException{
+        if (!allGames.containsKey(gameID)){
+            throw new DataAccessException("Error: bad request");
+        }
+        allGames.put(gameID, updatedGameData);
+        return updatedGameData;
+    }
+
     public void deleteAllGames(){
         allGames.clear();
     }

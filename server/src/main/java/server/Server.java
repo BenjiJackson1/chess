@@ -5,10 +5,7 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
-import model.request.CreateGameRequest;
-import model.request.LoginRequest;
-import model.request.LogoutRequest;
-import model.request.RegisterRequest;
+import model.request.*;
 import model.result.*;
 import model.result.RegisterResult;
 import service.GameService;
@@ -35,6 +32,7 @@ public class Server {
         Spark.delete("/db", this::clear);
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -90,8 +88,8 @@ public class Server {
 
     private Object createGame(Request req, Response res){
         var auth = req.headers("Authorization");
-        boolean authorized = userService.getAuth(auth);
-        if (!authorized){
+        AuthData authorized = userService.getAuth(auth);
+        if (authorized.authToken() == null){
             res.status(401);
             return new Gson().toJson(new CreateGameResult(null, "Error: unauthorized"));
         }
@@ -102,5 +100,26 @@ public class Server {
         }
         CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(game.gameName()));
         return new Gson().toJson(createGameResult);
+    }
+
+    private Object joinGame(Request req, Response res){
+        var auth = req.headers("Authorization");
+        AuthData authorized = userService.getAuth(auth);
+        if (authorized.authToken() == null){
+            res.status(401);
+            return new Gson().toJson(new CreateGameResult(null, "Error: unauthorized"));
+        }
+        var game = new Gson().fromJson(req.body(), JoinGameRequest.class);
+        JoinGameResult joinGameResult = gameService.joinGame(new JoinGameRequest(game.playerColor(), game.gameID()),
+                authorized.username());
+        if (joinGameResult.message() != null && joinGameResult.message().equals("Error: bad request")){
+            res.status(400);
+            return new Gson().toJson(joinGameResult);
+        }
+        if (joinGameResult.message() != null && joinGameResult.message().equals("Error: already taken")){
+            res.status(403);
+            return new Gson().toJson(joinGameResult);
+        }
+        return new Gson().toJson(joinGameResult);
     }
 }

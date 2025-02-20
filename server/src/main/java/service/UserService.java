@@ -6,6 +6,7 @@ import model.UserData;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
 import model.request.RegisterRequest;
+import model.result.JoinGameResult;
 import model.result.LoginResult;
 import model.result.LogoutResult;
 import model.result.RegisterResult;
@@ -14,13 +15,15 @@ public class UserService {
     private final UserDAO userDAO = new MemoryUserDAO();
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
-    public boolean getAuth(String authToken){
+    public AuthData getAuth(String authToken){
+        AuthData authData;
         try {
-            authDAO.getAuth(authToken);
+            authData = authDAO.getAuth(authToken);
         } catch (DataAccessException e) {
-            return false;
+            //TODO: use generic result class
+            return new AuthData(null, null);
         }
-        return true;
+        return authData;
     }
 
     public RegisterResult register(RegisterRequest registerRequest){
