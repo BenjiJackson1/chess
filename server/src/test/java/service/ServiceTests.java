@@ -1,9 +1,11 @@
 package service;
 
 import chess.ChessGame;
+import model.request.CreateGameRequest;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
 import model.request.RegisterRequest;
+import model.result.CreateGameResult;
 import model.result.LoginResult;
 import model.result.LogoutResult;
 import model.result.RegisterResult;
@@ -87,5 +89,23 @@ public class ServiceTests {
         LogoutResult logoutResult = userService.logout(new LogoutRequest("benji55"));
         Assertions.assertNotNull(logoutResult.message(), "Login Result did not return an error message");
         Assertions.assertEquals(logoutResult.message(), "Error: unauthorized", "Incorrect error message returned");
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Create Game Success")
+    public void createGameSuccess() {
+        GameService gameService = new GameService();
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest("Game1"));
+        Assertions.assertNull(createGameResult.message(), "Logout Result returned an error message");
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Create Game Failure")
+    public void createGameFailure() {
+        GameService gameService = new GameService();
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(null));
+        Assertions.assertEquals(createGameResult.message(), "Error: bad request", "Logout Result returned an error message");
     }
 }

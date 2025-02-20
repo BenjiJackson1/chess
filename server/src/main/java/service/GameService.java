@@ -15,7 +15,7 @@ public class GameService {
         try {
             gameData = gameDAO.createGame(createGameRequest.gameName());
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            return new CreateGameResult(null, "Error: bad request");
         }
         return new CreateGameResult(gameData.gameID(), null);
     }
