@@ -16,4 +16,8 @@ public class MemoryGameDAO implements GameDAO{
         allGames.put(allGames.size()+1, gameData);
         return gameData;
     }
+
+    public void deleteAllGames(){
+        allGames.clear();
+    }
 }
