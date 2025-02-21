@@ -65,7 +65,7 @@ public class ServiceTests {
 
     @Test
     @Order(6)
-    @DisplayName("Login Success")
+    @DisplayName("Logout Success")
     public void logoutSuccess() {
         UserService userService = new UserService();
         userService.register(new RegisterRequest("benji55", "passw0rd", "benji55@byu.edu"));
@@ -76,7 +76,7 @@ public class ServiceTests {
 
     @Test
     @Order(7)
-    @DisplayName("Login Failure For Non-Existing User")
+    @DisplayName("Logout Failure For Non-Existing User")
     public void logoutFailure() {
         UserService userService = new UserService();
         LogoutResult logoutResult = userService.logout(new LogoutRequest("benji55"));
