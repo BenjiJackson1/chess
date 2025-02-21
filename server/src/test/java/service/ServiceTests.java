@@ -120,6 +120,6 @@ public class ServiceTests {
         GameService gameService = new GameService();
         gameService.createGame(new CreateGameRequest("Game1"));
         JoinGameResult joinGameResult = gameService.joinGame(new JoinGameRequest("ORANGE", 1), "Benji");
-        Assertions.assertEquals(joinGameResult.message(), "Error: bad request", "Join Game Result returned wrong error message");;
+        Assertions.assertEquals(joinGameResult.message(), "Error: bad request", "Join Game Result returned wrong error message");
     }
 }

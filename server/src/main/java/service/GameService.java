@@ -8,9 +8,6 @@ import model.result.CreateGameResult;
 import model.result.JoinGameResult;
 import model.result.ListGamesResult;
 
-import java.awt.*;
-import java.util.List;
-
 public class GameService {
     private final GameDAO gameDAO = new MemoryGameDAO();
 
@@ -59,8 +56,7 @@ public class GameService {
     }
 
     public ListGamesResult listGames(){
-        ListGamesResult listGamesResult = new ListGamesResult(gameDAO.listGames());
-        return listGamesResult;
+        return new ListGamesResult(gameDAO.listGames());
     }
 
     public void clear(){
