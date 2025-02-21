@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import model.request.*;
 import model.result.*;
 import org.junit.jupiter.api.*;

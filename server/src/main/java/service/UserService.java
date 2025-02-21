@@ -19,7 +19,6 @@ public class UserService {
         try {
             authData = authDAO.getAuth(authToken);
         } catch (DataAccessException e) {
-            //TODO: use generic result class
             return new AuthData(null, null);
         }
         return authData;

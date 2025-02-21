@@ -82,7 +82,6 @@ public class Server {
     private Object clear(Request req, Response res){
         userService.clear();
         gameService.clear();
-        // TODO: replace with generic result class
         return new Gson().toJson(new LogoutResult(null));
     }
 
