@@ -27,8 +27,10 @@ public class GameService {
         }catch (DataAccessException e){
             return new JoinGameResult(e.getMessage());
         }
+        if (joinGameRequest.playerColor() == null){
+            return new JoinGameResult("Error: bad request");
+        }
         if (!joinGameRequest.playerColor().equals("WHITE") && !joinGameRequest.playerColor().equals("BLACK")){
-            System.out.println("throwing here!!");
             return new JoinGameResult("Error: bad request");
         }
         if (joinGameRequest.playerColor().equals("WHITE") && gameData.whiteUsername() == null){
