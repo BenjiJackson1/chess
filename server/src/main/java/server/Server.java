@@ -128,7 +128,7 @@ public class Server {
         AuthData authorized = userService.getAuth(auth);
         if (authorized.authToken() == null){
             res.status(401);
-            return new Gson().toJson(new CreateGameResult(null, "Error: unauthorized"));
+            return new Gson().toJson(new ListGamesResult(null, "Error: unauthorized"));
         }
         ListGamesResult listGamesResult = gameService.listGames();
         return new Gson().toJson(listGamesResult);

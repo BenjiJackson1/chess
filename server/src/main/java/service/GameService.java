@@ -56,7 +56,7 @@ public class GameService {
     }
 
     public ListGamesResult listGames(){
-        return new ListGamesResult(gameDAO.listGames());
+        return new ListGamesResult(gameDAO.listGames(), null);
     }
 
     public void clear(){

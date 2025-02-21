@@ -122,4 +122,25 @@ public class ServiceTests {
         JoinGameResult joinGameResult = gameService.joinGame(new JoinGameRequest("ORANGE", 1), "Benji");
         Assertions.assertEquals(joinGameResult.message(), "Error: bad request", "Join Game Result returned wrong error message");
     }
+
+    @Test
+    @Order(12)
+    @DisplayName("List Games Success")
+    public void listGamesSuccess() {
+        GameService gameService = new GameService();
+        gameService.createGame(new CreateGameRequest("Game1"));
+        ListGamesResult listGamesResult = gameService.listGames();
+        Assertions.assertNull(listGamesResult.message(), "Join Game Result returned an error message");
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("List Games Failure - Unauthorized")
+    public void listGamesFailure() {
+        GameService gameService = new GameService();
+        gameService.createGame(new CreateGameRequest("Game1"));
+        gameService.clear();
+        ListGamesResult listGamesResult = gameService.listGames();
+        Assertions.assertNull(listGamesResult.message(), "Join Game Result returned an error message");
+    }
 }
