@@ -1,14 +1,8 @@
 package service;
 
 import chess.ChessGame;
-import model.request.CreateGameRequest;
-import model.request.LoginRequest;
-import model.request.LogoutRequest;
-import model.request.RegisterRequest;
-import model.result.CreateGameResult;
-import model.result.LoginResult;
-import model.result.LogoutResult;
-import model.result.RegisterResult;
+import model.request.*;
+import model.result.*;
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -107,5 +101,25 @@ public class ServiceTests {
         GameService gameService = new GameService();
         CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(null));
         Assertions.assertEquals(createGameResult.message(), "Error: bad request", "Logout Result returned an error message");
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Join Game Success")
+    public void joinGameSuccess() {
+        GameService gameService = new GameService();
+        gameService.createGame(new CreateGameRequest("Game1"));
+        JoinGameResult joinGameResult = gameService.joinGame(new JoinGameRequest("WHITE", 1), "Benji");
+        Assertions.assertNull(joinGameResult.message(), "Join Game Result returned an error message");
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Join Game Failure - Nonexistent Color")
+    public void joinGameFailure() {
+        GameService gameService = new GameService();
+        gameService.createGame(new CreateGameRequest("Game1"));
+        JoinGameResult joinGameResult = gameService.joinGame(new JoinGameRequest("ORANGE", 1), "Benji");
+        Assertions.assertEquals(joinGameResult.message(), "Error: bad request", "Join Game Result returned wrong error message");;
     }
 }

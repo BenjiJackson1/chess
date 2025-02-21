@@ -6,6 +6,10 @@ import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.result.CreateGameResult;
 import model.result.JoinGameResult;
+import model.result.ListGamesResult;
+
+import java.awt.*;
+import java.util.List;
 
 public class GameService {
     private final GameDAO gameDAO = new MemoryGameDAO();
@@ -52,6 +56,11 @@ public class GameService {
             }
         }
         return new JoinGameResult("Error: already taken");
+    }
+
+    public ListGamesResult listGames(){
+        ListGamesResult listGamesResult = new ListGamesResult(gameDAO.listGames());
+        return listGamesResult;
     }
 
     public void clear(){

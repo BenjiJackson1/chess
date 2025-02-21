@@ -3,6 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class MemoryGameDAO implements GameDAO{
@@ -30,6 +32,10 @@ public class MemoryGameDAO implements GameDAO{
         }
         allGames.put(gameID, updatedGameData);
         return updatedGameData;
+    }
+
+    public ArrayList<GameData> listGames() {
+        return new ArrayList<>(allGames.values());
     }
 
     public void deleteAllGames(){

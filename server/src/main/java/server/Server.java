@@ -33,6 +33,7 @@ public class Server {
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
+        Spark.get("/game", this::listGames);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -121,5 +122,16 @@ public class Server {
             return new Gson().toJson(joinGameResult);
         }
         return new Gson().toJson(joinGameResult);
+    }
+
+    private Object listGames(Request req, Response res){
+        var auth = req.headers("Authorization");
+        AuthData authorized = userService.getAuth(auth);
+        if (authorized.authToken() == null){
+            res.status(401);
+            return new Gson().toJson(new CreateGameResult(null, "Error: unauthorized"));
+        }
+        ListGamesResult listGamesResult = gameService.listGames();
+        return new Gson().toJson(listGamesResult);
     }
 }
