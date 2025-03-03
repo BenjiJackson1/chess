@@ -11,7 +11,16 @@ import model.result.LogoutResult;
 import model.result.RegisterResult;
 
 public class UserService {
-    private final UserDAO userDAO = new MemoryUserDAO();
+    private final UserDAO userDAO;
+
+    {
+        try {
+            userDAO = new MySQLUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private final AuthDAO authDAO = new MemoryAuthDAO();
 
     public AuthData getAuth(String authToken){

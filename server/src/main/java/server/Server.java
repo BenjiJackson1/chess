@@ -12,13 +12,8 @@ import service.UserService;
 import spark.*;
 
 public class Server {
-    private final UserService userService;
-    private final GameService gameService;
-
-    public Server() {
-        this.userService = new UserService();
-        this.gameService = new GameService();
-    }
+    private final UserService userService = new UserService();
+    private final GameService gameService = new GameService();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
