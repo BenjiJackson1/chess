@@ -21,7 +21,15 @@ public class UserService {
         }
     }
 
-    private final AuthDAO authDAO = new MemoryAuthDAO();
+    private final AuthDAO authDAO;
+
+    {
+        try {
+            authDAO = new MySQLAuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public AuthData getAuth(String authToken){
         AuthData authData;
