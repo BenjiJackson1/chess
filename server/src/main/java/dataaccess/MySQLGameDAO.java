@@ -2,7 +2,6 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
 
 import java.sql.ResultSet;
@@ -39,11 +38,13 @@ public class MySQLGameDAO implements GameDAO{
             }
         } catch (Exception e) {
         }
-        throw new DataAccessException("Error: unauthorized");
+        throw new DataAccessException("Error: bad request");
     }
 
     public GameData updateGame(Integer gameID, GameData updatedGameData) throws DataAccessException {
-        getGame(gameID);
+        if (getGame(gameID) == null){
+            throw new DataAccessException("Error: bad request");
+        }
         var json = new Gson().toJson(updatedGameData);
         var statement = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE id = ?";
         executeUpdate(statement, updatedGameData.whiteUsername(),
