@@ -26,7 +26,7 @@ public class MySQLAuthDAO implements AuthDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         throw new DataAccessException("Error: unauthorized");
     }
@@ -53,7 +53,7 @@ public class MySQLAuthDAO implements AuthDAO{
         try{
             executeUpdate(statement);
         }
-        catch (DataAccessException e){
+        catch (DataAccessException ignored){
         }
     }
 

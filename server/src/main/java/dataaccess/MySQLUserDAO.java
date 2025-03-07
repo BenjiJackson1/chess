@@ -22,16 +22,16 @@ public class MySQLUserDAO implements UserDAO{
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         UserData user = readUser(rs);
-                        if (BCrypt.checkpw(password, user.password()) == false){
+                        if (!BCrypt.checkpw(password, user.password())){
                             mismatch = true;
                             throw new DataAccessException("");
-                        };
+                        }
                         return new UserData(user.username(), password, user.email());
                     }
                 }
             }
         } catch (Exception e) {
-            if (mismatch == true){
+            if (mismatch){
                 throw new DataAccessException("Error: unauthorized");
             }
         }
@@ -54,7 +54,7 @@ public class MySQLUserDAO implements UserDAO{
         try{
             executeUpdate(statement);
         }
-        catch (DataAccessException e){
+        catch (DataAccessException ignored){
         }
     }
 

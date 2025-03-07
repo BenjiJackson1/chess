@@ -21,8 +21,7 @@ public class MySQLGameDAO implements GameDAO{
         var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
         var json = new Gson().toJson(new ChessGame());
         int id = executeUpdate(statement, null, null, gameName, json);
-        GameData gameData = getGame(id);
-        return gameData;
+        return getGame(id);
     }
 
     public GameData getGame(Integer gameID) throws DataAccessException {
@@ -36,7 +35,7 @@ public class MySQLGameDAO implements GameDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         throw new DataAccessException("Error: bad request");
     }
@@ -63,7 +62,7 @@ public class MySQLGameDAO implements GameDAO{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return result;
     }
@@ -73,7 +72,7 @@ public class MySQLGameDAO implements GameDAO{
         try{
             executeUpdate(statement);
         }
-        catch (DataAccessException e){
+        catch (DataAccessException ignored){
         }
     }
 
