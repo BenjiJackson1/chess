@@ -1,6 +1,5 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -35,9 +34,8 @@ public class MySQLUserDAO implements UserDAO{
             if (mismatch == true){
                 throw new DataAccessException("Error: unauthorized");
             }
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
+        throw new DataAccessException("Error: unauthorized");
     }
 
     public UserData createUser(UserData userData) throws DataAccessException {
