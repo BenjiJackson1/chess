@@ -90,7 +90,7 @@ public class ServiceTests {
     public void createGameSuccess() {
         GameService gameService = new GameService();
         CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest("Game1"));
-        Assertions.assertNull(createGameResult.message(), "Logout Result returned an error message");
+        Assertions.assertNull(createGameResult.message(), "Create Game Result returned an error message");
     }
 
     @Test
