@@ -14,9 +14,10 @@ public class MySQLUserDAO implements UserDAO{
 
     public UserData getUser(String username, String password) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM pet WHERE id=?";
+            var statement = "SELECT username, password, email FROM users WHERE username=? AND password=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
+                ps.setString(2, password);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readUser(rs);
@@ -30,14 +31,25 @@ public class MySQLUserDAO implements UserDAO{
     }
 
     public UserData createUser(UserData userData) throws DataAccessException {
-        return null;
+        var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+        try{
+            executeUpdate(statement, userData.username(), userData.password(), userData.email());
+            return userData;
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: already taken");
+        }
     }
 
-    public void deleteAllUsers() {
-
+    public void deleteAllUsers(){
+        var statement = "TRUNCATE users";
+        try{
+            executeUpdate(statement);
+        }
+        catch (DataAccessException e){
+        }
     }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+    private void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
@@ -47,13 +59,6 @@ public class MySQLUserDAO implements UserDAO{
                     else if (param == null) ps.setNull(i + 1, NULL);
                 }
                 ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
@@ -72,9 +77,10 @@ public class MySQLUserDAO implements UserDAO{
     };
 
     private UserData readUser(ResultSet rs) throws SQLException {
-        var json = rs.getString("json");
-        var user = new Gson().fromJson(json, UserData.class);
-        return new UserData(user.username(), user.password(), user.email());
+        var username = rs.getString("username");
+        var password = rs.getString("password");
+        var email = rs.getString("email");
+        return new UserData(username, password, email);
     }
 
     private void configureDatabase() throws DataAccessException {
