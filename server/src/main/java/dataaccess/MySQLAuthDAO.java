@@ -50,7 +50,7 @@ public class MySQLAuthDAO implements AuthDAO{
     }
 
     public void deleteAllAuth() {
-        var statement = "TRUNCATE users";
+        var statement = "TRUNCATE auth";
         try{
             executeUpdate(statement);
         }

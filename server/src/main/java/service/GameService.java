@@ -9,7 +9,15 @@ import model.result.JoinGameResult;
 import model.result.ListGamesResult;
 
 public class GameService {
-    private final GameDAO gameDAO = new MemoryGameDAO();
+    private final GameDAO gameDAO;
+
+    {
+        try {
+            gameDAO = new MySQLGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest){
         GameData gameData;
