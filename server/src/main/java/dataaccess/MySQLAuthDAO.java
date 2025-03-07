@@ -1,11 +1,11 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -33,15 +33,29 @@ public class MySQLAuthDAO implements AuthDAO{
     }
 
     public AuthData createAuth(String userName) throws DataAccessException {
-        return null;
+        String authToken = UUID.randomUUID().toString();
+        var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        try{
+            executeUpdate(statement, authToken, userName);
+            return new AuthData(authToken, userName);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: already taken");
+        }
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-
+        getAuth(authToken);
+        var statement = "DELETE FROM auth WHERE authToken=?";
+        executeUpdate(statement, authToken);
     }
 
     public void deleteAllAuth() {
-
+        var statement = "TRUNCATE users";
+        try{
+            executeUpdate(statement);
+        }
+        catch (DataAccessException e){
+        }
     }
 
     private void executeUpdate(String statement, Object... params) throws DataAccessException {

@@ -80,7 +80,7 @@ public class ServiceTests {
     public void logoutFailure() {
         UserService userService = new UserService();
         LogoutResult logoutResult = userService.logout(new LogoutRequest("benji55"));
-        Assertions.assertNotNull(logoutResult.message(), "Login Result did not return an error message");
+        Assertions.assertNotNull(logoutResult.message(), "Logout Result did not return an error message");
         Assertions.assertEquals(logoutResult.message(), "Error: unauthorized", "Incorrect error message returned");
     }
 
