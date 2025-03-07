@@ -1,5 +1,6 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.UserData;
 import java.sql.*;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -12,6 +13,19 @@ public class MySQLUserDAO implements UserDAO{
     }
 
     public UserData getUser(String username, String password) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, json FROM pet WHERE id=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
@@ -56,6 +70,12 @@ public class MySQLUserDAO implements UserDAO{
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
+
+    private UserData readUser(ResultSet rs) throws SQLException {
+        var json = rs.getString("json");
+        var user = new Gson().fromJson(json, UserData.class);
+        return new UserData(user.username(), user.password(), user.email());
+    }
 
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
