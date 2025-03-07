@@ -2,6 +2,8 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.*;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -13,18 +15,26 @@ public class MySQLUserDAO implements UserDAO{
     }
 
     public UserData getUser(String username, String password) throws DataAccessException {
+        boolean mismatch = false;
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email FROM users WHERE username=? AND password=?";
+            var statement = "SELECT username, password, email FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
-                ps.setString(2, password);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readUser(rs);
+                        UserData user = readUser(rs);
+                        if (BCrypt.checkpw(password, user.password()) == false){
+                            mismatch = true;
+                            throw new DataAccessException("");
+                        };
+                        return new UserData(user.username(), password, user.email());
                     }
                 }
             }
         } catch (Exception e) {
+            if (mismatch == true){
+                throw new DataAccessException("Error: unauthorized");
+            }
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
@@ -33,7 +43,8 @@ public class MySQLUserDAO implements UserDAO{
     public UserData createUser(UserData userData) throws DataAccessException {
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         try{
-            executeUpdate(statement, userData.username(), userData.password(), userData.email());
+            String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+            executeUpdate(statement, userData.username(), hashedPassword, userData.email());
             return userData;
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: already taken");
