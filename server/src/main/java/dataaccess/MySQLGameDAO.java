@@ -20,7 +20,13 @@ public class MySQLGameDAO extends MySQLDAO implements GameDAO{
     public GameData createGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
         var json = new Gson().toJson(new ChessGame());
-        int id = executeUpdate(statement, null, null, gameName, json);
+        int id;
+        try{
+            id = executeUpdate(statement, null, null, gameName, json);
+        } catch (DataAccessException e){
+            throw new DataAccessException("Error: bad request");
+        }
+
         return getGame(id);
     }
 
