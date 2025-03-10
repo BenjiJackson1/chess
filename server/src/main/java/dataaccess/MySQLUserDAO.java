@@ -11,26 +11,20 @@ public class MySQLUserDAO extends MySQLDAO implements UserDAO{
     }
 
     public UserData getUser(String username, String password) throws DataAccessException {
-        boolean mismatch = false;
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email FROM users WHERE username=?";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, username);
-                try (var rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        UserData user = readUser(rs);
-                        if (!BCrypt.checkpw(password, user.password())){
-                            mismatch = true;
-                            throw new DataAccessException("");
-                        }
-                        return new UserData(user.username(), password, user.email());
+            var ps = conn.prepareStatement("SELECT username, password, email FROM users WHERE username=?");
+            ps.setString(1, username);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    UserData user = readUser(rs);
+                    if (!BCrypt.checkpw(password, user.password())){
+                        throw new DataAccessException("Error: unauthorized");
                     }
+                    return new UserData(user.username(), password, user.email());
                 }
             }
         } catch (Exception e) {
-            if (mismatch){
                 throw new DataAccessException("Error: unauthorized");
-            }
         }
         throw new DataAccessException("Error: unauthorized");
     }

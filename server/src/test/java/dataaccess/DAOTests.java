@@ -234,6 +234,7 @@ public class DAOTests {
         GameDAO gameDAO;
         try{
             gameDAO = new MySQLGameDAO();
+            gameDAO.deleteAllGames();
             gameDAO.createGame(null);
         } catch (DataAccessException e){
             Assertions.assertEquals("Error: bad request", e.getMessage(), "Incorrect error message");
@@ -250,7 +251,7 @@ public class DAOTests {
             gameDAO.createGame("Jegor");
             gameDAO.createGame("Here");
             List<GameData> gamesList = gameDAO.listGames();
-            Assertions.assertEquals(4, gamesList.size(), "Not the correct size.");
+            Assertions.assertEquals(2, gamesList.size(), "Not the correct size.");
         } catch (DataAccessException e){
             Assertions.fail(e.getMessage());
         }
