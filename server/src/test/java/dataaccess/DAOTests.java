@@ -1,9 +1,16 @@
 package dataaccess;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+
+import java.util.List;
+import java.util.Timer;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DAOTests {
@@ -232,4 +239,91 @@ public class DAOTests {
             Assertions.assertEquals("Error: bad request", e.getMessage(), "Incorrect error message");
         }
     }
+
+    @Test
+    @Order(17)
+    @DisplayName("List Games Success")
+    public void listGamesSuccess(){
+        GameDAO gameDAO;
+        try{
+            gameDAO = new MySQLGameDAO();
+            gameDAO.createGame("Jegor");
+            gameDAO.createGame("Here");
+            List<GameData> gamesList = gameDAO.listGames();
+            Assertions.assertEquals(4, gamesList.size(), "Not the correct size.");
+        } catch (DataAccessException e){
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(18)
+    @DisplayName("List Games Failure")
+    public void listGamesFailure(){
+        GameDAO gameDAO;
+        try{
+            gameDAO = new MySQLGameDAO();
+            gameDAO.deleteAllGames();
+            gameDAO.listGames();
+        } catch (DataAccessException e){
+            Assertions.assertEquals("Error: bad request", e.getMessage(), "Incorrect error message");
+        }
+    }
+
+    @Test
+    @Order(19)
+    @DisplayName("Delete All Games Success")
+    public void deleteAllGamesTest(){
+        GameDAO gameDAO;
+        try{
+            gameDAO = new MySQLGameDAO();
+            gameDAO.deleteAllGames();
+            gameDAO.getGame(1);
+        } catch (DataAccessException e){
+            Assertions.assertEquals(e.getMessage(), "Error: bad request", "Incorrect error message");
+        }
+    }
+
+    @Test
+    @Order(20)
+    @DisplayName("Update Game Success")
+    public void updateGameSuccess(){
+        GameDAO gameDAO;
+        try{
+            gameDAO = new MySQLGameDAO();
+            GameData gameData = gameDAO.createGame("Kasparov");
+            ChessGame newChessGame = gameData.game();
+            try{
+                newChessGame.makeMove(new ChessMove(new ChessPosition(2,2), new ChessPosition(3,2), null));
+            } catch (InvalidMoveException e){
+                Assertions.fail("Invalid move");
+            }
+            gameDAO.updateGame(gameData.gameID(), new GameData(gameData.gameID(), gameData.whiteUsername(),
+                    gameData.blackUsername(), gameData.gameName(), newChessGame));
+            Assertions.assertEquals( "WHITE", gameDAO.getGame(1).game().getTeamTurn().toString(), "Move was not made");
+        } catch (DataAccessException e){
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName("Update Game Failure")
+    public void updateGameFailure(){
+        GameDAO gameDAO;
+        try{
+            gameDAO = new MySQLGameDAO();
+            gameDAO.deleteAllGames();
+            ChessGame chessGame = new ChessGame();
+            try{
+                chessGame.makeMove(new ChessMove(new ChessPosition(2,2), new ChessPosition(3,2), null));
+            } catch (InvalidMoveException e){
+                Assertions.fail("Invalid move");
+            }
+            gameDAO.updateGame(1, new GameData(1, null, null, "New", chessGame));
+        } catch (DataAccessException e){
+            Assertions.assertEquals("Error: bad request", e.getMessage(), "Incorrect error message");
+        }
+    }
+
 }
