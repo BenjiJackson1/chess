@@ -19,7 +19,7 @@ public class ServerFacade {
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException{
         var path = "/user";
         try {
-            return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+            return this.makeRequest("POST", path, registerRequest, RegisterResult.class, null);
         } catch (ResponseException ex){
             throw new ResponseException(403, "Error: already taken");
         }
@@ -28,7 +28,16 @@ public class ServerFacade {
     public LoginResult login(LoginRequest loginRequest) throws ResponseException{
         var path = "/session";
         try {
-            return this.makeRequest("POST", path, loginRequest, LoginResult.class);
+            return this.makeRequest("POST", path, loginRequest, LoginResult.class, null);
+        } catch (ResponseException ex){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+    }
+
+    public LogoutResult logout(LogoutRequest logoutRequest) throws ResponseException{
+        var path = "/session";
+        try{
+            return this.makeRequest("DELETE", path, logoutRequest, LogoutResult.class, logoutRequest.authToken());
         } catch (ResponseException ex){
             throw new ResponseException(401, "Error: unauthorized");
         }
@@ -36,16 +45,16 @@ public class ServerFacade {
 
     public LogoutResult clear() throws ResponseException{
         var path = "/db";
-        return this.makeRequest("DELETE", path, null, LogoutResult.class);
+        return this.makeRequest("DELETE", path, null, LogoutResult.class, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String header) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
+            writeHeader(header, http);
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -77,6 +86,12 @@ public class ServerFacade {
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
+        }
+    }
+
+    private static void writeHeader(String header, HttpURLConnection http) throws IOException {
+        if (header != null) {
+            http.addRequestProperty("Authorization", header);
         }
     }
 

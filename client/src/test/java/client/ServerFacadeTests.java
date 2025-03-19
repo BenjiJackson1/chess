@@ -1,6 +1,7 @@
 package client;
 
 import model.request.LoginRequest;
+import model.request.LogoutRequest;
 import model.request.RegisterRequest;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -64,7 +65,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     @DisplayName("Bad Login")
     void loginFailure() throws Exception {
         try{
@@ -72,5 +73,27 @@ public class ServerFacadeTests {
         } catch (Exception ex){
             assertTrue(ex.getMessage() == "Error: unauthorized");
         }
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Good Logout")
+    void logoutPositive() throws Exception {
+        facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
+        var userData = facade.login(new LoginRequest("p3", "password"));
+        var result = facade.logout(new LogoutRequest(userData.authToken()));
+        assertTrue(result.message() == null);
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Bad Logout - Wrong Auth")
+    void logoutFailure() throws Exception {
+        try{
+            facade.logout(new LogoutRequest("SurelyWon'tWork"));
+        }catch (Exception ex){
+            assertTrue(ex.getMessage()== "Error: unauthorized");
+        }
+
     }
 }
