@@ -43,6 +43,33 @@ public class ServerFacade {
         }
     }
 
+    public CreateGameResult createGame(CreateGameRequest createGameRequest, String authToken) throws ResponseException{
+        var path = "/game";
+        try{
+            return this.makeRequest("POST", path, createGameRequest, CreateGameResult.class, authToken);
+        } catch (ResponseException ex){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest, String authToken) throws ResponseException{
+        var path = "/game";
+        try{
+            return this.makeRequest("PUT", path, joinGameRequest, JoinGameResult.class, authToken);
+        } catch (ResponseException ex){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+    }
+
+    public ListGamesResult listGames(String authToken) throws ResponseException{
+        var path = "/game";
+        try{
+            return this.makeRequest("GET", path, null, ListGamesResult.class, authToken);
+        } catch (ResponseException ex){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+    }
+
     public LogoutResult clear() throws ResponseException{
         var path = "/db";
         return this.makeRequest("DELETE", path, null, LogoutResult.class, null);
