@@ -18,7 +18,20 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException{
         var path = "/user";
-        return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        try {
+            return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        } catch (ResponseException ex){
+            throw new ResponseException(403, "Error: already taken");
+        }
+    }
+
+    public LoginResult login(LoginRequest loginRequest) throws ResponseException{
+        var path = "/session";
+        try {
+            return this.makeRequest("POST", path, loginRequest, LoginResult.class);
+        } catch (ResponseException ex){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
     }
 
     public LogoutResult clear() throws ResponseException{

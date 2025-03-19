@@ -1,5 +1,6 @@
 package client;
 
+import model.request.LoginRequest;
 import model.request.RegisterRequest;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -34,9 +35,42 @@ public class ServerFacadeTests {
 
 
     @Test
+    @Order(1)
+    @DisplayName("Good Register")
     void register() throws Exception {
         var authData = facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
         assertTrue(authData.authToken().length() > 10);
     }
 
+    @Test
+    @Order(2)
+    @DisplayName("Failed Register - Multiple users with same username")
+    void register_fails() throws Exception {
+        facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
+        try {
+            facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
+        } catch (Exception ex){
+            assertTrue(ex.getMessage() == "Error: already taken");
+        }
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Good Login")
+    void loginPositive() throws Exception {
+        facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
+        var userData = facade.login(new LoginRequest("p3", "password"));
+        assertTrue(userData.authToken().length() > 9);
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Bad Login")
+    void loginFailure() throws Exception {
+        try{
+            facade.login(new LoginRequest("p3", "password"));
+        } catch (Exception ex){
+            assertTrue(ex.getMessage() == "Error: unauthorized");
+        }
+    }
 }
