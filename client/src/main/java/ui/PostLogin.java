@@ -1,7 +1,8 @@
 package ui;
 
+import chess.ChessGame;
 import model.request.CreateGameRequest;
-import model.request.LoginRequest;
+import model.request.JoinGameRequest;
 import model.request.LogoutRequest;
 import server.ServerFacade;
 
@@ -27,7 +28,8 @@ public class PostLogin implements Client{
                 case "quit" -> new ReplResponse("quit", State.POSTLOGIN, authToken);
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-                case "logout" -> logout(params);
+                case "play" -> joinGame(params);
+                case "logout" -> logout();
                 default -> help();
             };
         } catch (Exception e) {
@@ -35,7 +37,7 @@ public class PostLogin implements Client{
         }
     }
 
-    public ReplResponse logout(String ... params){
+    public ReplResponse logout(){
         try{
             server.logout(new LogoutRequest(authToken));
             return new ReplResponse("You logged out!", State.PRELOGIN, authToken);
@@ -65,6 +67,19 @@ public class PostLogin implements Client{
             return new ReplResponse(gameInfo, State.POSTLOGIN, authToken);
         } catch (Exception e){
             return new ReplResponse("Expected: <GAME_NAME>", State.POSTLOGIN, authToken);
+        }
+    }
+
+    public ReplResponse joinGame(String ... params){
+        try{
+            var gameList = server.listGames(authToken);
+            int num = Integer.parseInt(params[0]);
+            int gameID = gameList.games().get(num-1).gameID();
+            System.out.println(gameList.games().get(num-1).gameName());
+            server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
+            return new ReplResponse("You joined the Game", State.POSTLOGIN, authToken);
+        } catch (Exception e){
+            return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken);
         }
     }
 
