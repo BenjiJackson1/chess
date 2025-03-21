@@ -5,7 +5,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -49,7 +49,7 @@ public class ServerFacadeTests {
         try {
             facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
         } catch (Exception ex){
-            assertTrue(ex.getMessage() == "Error: already taken");
+            assertSame("Error: already taken", ex.getMessage());
         }
     }
 
@@ -65,11 +65,11 @@ public class ServerFacadeTests {
     @Test
     @Order(4)
     @DisplayName("Bad Login")
-    void loginFailure() throws Exception {
+    void loginFailure() {
         try{
             facade.login(new LoginRequest("p3", "password"));
         } catch (Exception ex){
-            assertTrue(ex.getMessage() == "Error: unauthorized");
+            assertSame("Error: unauthorized", ex.getMessage());
         }
     }
 
@@ -80,17 +80,17 @@ public class ServerFacadeTests {
         facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
         var userData = facade.login(new LoginRequest("p3", "password"));
         var result = facade.logout(new LogoutRequest(userData.authToken()));
-        assertTrue(result.message() == null);
+        assertNull(result.message());
     }
 
     @Test
     @Order(6)
     @DisplayName("Bad Logout - Wrong Auth")
-    void logoutFailure() throws Exception {
+    void logoutFailure() {
         try{
             facade.logout(new LogoutRequest("SurelyWon'tWork"));
         }catch (Exception ex){
-            assertTrue(ex.getMessage()== "Error: unauthorized");
+            assertSame("Error: unauthorized", ex.getMessage());
         }
 
     }
@@ -102,7 +102,7 @@ public class ServerFacadeTests {
         facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
         var userData = facade.login(new LoginRequest("p3", "password"));
         var result = facade.createGame(new CreateGameRequest("JUEGO UNO"), userData.authToken());
-        assertTrue(result.message() == null);
+        assertNull(result.message());
     }
 
     @Test
@@ -113,7 +113,7 @@ public class ServerFacadeTests {
         try{
             facade.createGame(new CreateGameRequest("JUEGO UNO"), "Wrong Auth");
         } catch (Exception e){
-            assertTrue(e.getMessage() == "Error: unauthorized");
+            assertSame("Error: unauthorized", e.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class ServerFacadeTests {
         var authData = facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
         var gameData = facade.createGame(new CreateGameRequest("Bob's Game"), authData.authToken());
         var result = facade.joinGame(new JoinGameRequest("WHITE", gameData.gameID()), authData.authToken());
-        assertTrue(result.message()== null);
+        assertNull(result.message());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class ServerFacadeTests {
         try{
             facade.joinGame(new JoinGameRequest("WHITE", 18), authData.authToken());
         } catch (Exception ex){
-            assertTrue(ex.getMessage() == "Error: unauthorized");
+            assertSame("Error: unauthorized", ex.getMessage());
         }
     }
 
@@ -148,7 +148,7 @@ public class ServerFacadeTests {
         facade.createGame(new CreateGameRequest("Bob's Game 2"), authData.authToken());
         facade.createGame(new CreateGameRequest("Ender's Game"), authData.authToken());
         var allGames = facade.listGames(authData.authToken());
-        assertTrue(allGames.games().size() == 3);
+        assertEquals(3, allGames.games().size());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ServerFacadeTests {
         try{
             facade.listGames("Bad");
         } catch (Exception ex){
-            assertTrue(ex.getMessage() == "Error: unauthorized");
+            assertSame("Error: unauthorized", ex.getMessage());
         }
     }
 }
