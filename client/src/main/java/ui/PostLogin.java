@@ -4,7 +4,7 @@ import chess.ChessGame;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.LogoutRequest;
-import server.ServerFacade;
+import serverFacade.ServerFacade;
 
 import java.util.Arrays;
 
