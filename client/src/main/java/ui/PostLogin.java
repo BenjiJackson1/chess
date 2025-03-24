@@ -172,7 +172,8 @@ public class PostLogin implements Client{
             System.out.print("   \n");
             for (int j = 8; j > 0; j--) {
                 System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                System.out.print(" "+ j +" ");
+                int col = 9 - j;
+                System.out.print(" "+ col +" ");
                 for (int i = 1; i < 9; i++) {
                     if ((i+j) % 2 == 0){
                         System.out.print(SET_BG_COLOR_BLUE);
@@ -182,7 +183,7 @@ public class PostLogin implements Client{
                     System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(9-j,9-i))));
                 }
                 System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                System.out.print(" "+ j +" \n");
+                System.out.print(" "+ col +" \n");
             }
             System.out.print("   ");
             System.out.print(" h ");
