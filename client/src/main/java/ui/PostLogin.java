@@ -3,7 +3,6 @@ package ui;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import model.GameData;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.LogoutRequest;
@@ -34,6 +33,7 @@ public class PostLogin implements Client{
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "play" -> joinGame(params);
+                case "observe" -> observerGame(params);
                 case "logout" -> logout();
                 default -> help();
             };
@@ -83,17 +83,30 @@ public class PostLogin implements Client{
             ChessGame game = gameList.games().get(num-1).game();
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
             System.out.print(SET_TEXT_COLOR_BLACK);
-            System.out.println(gameList.games().get(num-1).gameName());
             server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
             printGame(game, params[1]);
-            return new ReplResponse(game.getBoard().toString(), State.POSTLOGIN, authToken);
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken);
         } catch (Exception e){
             return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken);
         }
     }
 
+    public ReplResponse observerGame(String ... params){
+        try{
+            var gameList = server.listGames(authToken);
+            int num = Integer.parseInt(params[0]);
+            ChessGame game = gameList.games().get(num-1).game();
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            printGame(game, null);
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken);
+        } catch (Exception e){
+            return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
+        }
+    }
+
     private void printGame(ChessGame chessGame, String teamColor){
-        if (teamColor == null || teamColor.toLowerCase().equals("white")){
+        if (teamColor == null || teamColor.equalsIgnoreCase("white")){
             System.out.print("   ");
             System.out.print(" a ");
             System.out.print(" b ");
@@ -108,7 +121,7 @@ public class PostLogin implements Client{
                 System.out.print(SET_BG_COLOR_LIGHT_GREY);
                 System.out.print(" "+ j +" ");
                 for (int i = 1; i < 9; i++) {
-                    if (i % 2 == 0){
+                    if ((i+j) % 2 == 0){
                         System.out.print(SET_BG_COLOR_BLUE);
                     }else{
                         System.out.print(SET_BG_COLOR_WHITE);
@@ -118,7 +131,54 @@ public class PostLogin implements Client{
                 System.out.print(SET_BG_COLOR_LIGHT_GREY);
                 System.out.print(" "+ j +" \n");
             }
+            System.out.print("   ");
+            System.out.print(" a ");
+            System.out.print(" b ");
+            System.out.print(" c ");
+            System.out.print(" d ");
+            System.out.print(" e ");
+            System.out.print(" f ");
+            System.out.print(" g ");
+            System.out.print(" h ");
+            System.out.print("   \n");
         }
+        else{
+            System.out.print("   ");
+            System.out.print(" h ");
+            System.out.print(" g ");
+            System.out.print(" f ");
+            System.out.print(" e ");
+            System.out.print(" d ");
+            System.out.print(" c ");
+            System.out.print(" b ");
+            System.out.print(" a ");
+            System.out.print("   \n");
+            for (int j = 8; j > 0; j--) {
+                System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                System.out.print(" "+ j +" ");
+                for (int i = 1; i < 9; i++) {
+                    if ((i+j) % 2 == 0){
+                        System.out.print(SET_BG_COLOR_BLUE);
+                    }else{
+                        System.out.print(SET_BG_COLOR_WHITE);
+                    }
+                    System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(9-j,9-i))));
+                }
+                System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                System.out.print(" "+ j +" \n");
+            }
+            System.out.print("   ");
+            System.out.print(" h ");
+            System.out.print(" g ");
+            System.out.print(" f ");
+            System.out.print(" e ");
+            System.out.print(" d ");
+            System.out.print(" c ");
+            System.out.print(" b ");
+            System.out.print(" a ");
+            System.out.print("   \n");
+        }
+        System.out.print(SET_TEXT_COLOR_WHITE);
     }
 
     private String pieceGetter(ChessPiece chessPiece){
@@ -147,8 +207,8 @@ public class PostLogin implements Client{
         }
         if (chessPiece.getPieceType() == ChessPiece.PieceType.QUEEN){
             if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                return WHITE_KING;
-            } return BLACK_KING;
+                return WHITE_QUEEN;
+            } return BLACK_QUEEN;
         }
         else{
             if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
