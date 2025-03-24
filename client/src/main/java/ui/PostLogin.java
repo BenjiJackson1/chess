@@ -1,12 +1,17 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
+import model.GameData;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.LogoutRequest;
-import serverFacade.ServerFacade;
+import serverfacade.ServerFacade;
 
 import java.util.Arrays;
+
+import static ui.EscapeSequences.*;
 
 public class PostLogin implements Client{
     private final ServerFacade server;
@@ -76,11 +81,80 @@ public class PostLogin implements Client{
             int num = Integer.parseInt(params[0]);
             int gameID = gameList.games().get(num-1).gameID();
             ChessGame game = gameList.games().get(num-1).game();
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            System.out.print(SET_TEXT_COLOR_BLACK);
             System.out.println(gameList.games().get(num-1).gameName());
             server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
+            printGame(game, params[1]);
             return new ReplResponse(game.getBoard().toString(), State.POSTLOGIN, authToken);
         } catch (Exception e){
             return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken);
+        }
+    }
+
+    private void printGame(ChessGame chessGame, String teamColor){
+        if (teamColor == null || teamColor.toLowerCase().equals("white")){
+            System.out.print("   ");
+            System.out.print(" a ");
+            System.out.print(" b ");
+            System.out.print(" c ");
+            System.out.print(" d ");
+            System.out.print(" e ");
+            System.out.print(" f ");
+            System.out.print(" g ");
+            System.out.print(" h ");
+            System.out.print("   \n");
+            for (int j = 8; j > 0; j--) {
+                System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                System.out.print(" "+ j +" ");
+                for (int i = 1; i < 9; i++) {
+                    if (i % 2 == 0){
+                        System.out.print(SET_BG_COLOR_BLUE);
+                    }else{
+                        System.out.print(SET_BG_COLOR_WHITE);
+                    }
+                    System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(j,i))));
+                }
+                System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                System.out.print(" "+ j +" \n");
+            }
+        }
+    }
+
+    private String pieceGetter(ChessPiece chessPiece){
+        if (chessPiece == null){
+            return EMPTY;
+        }
+        if (chessPiece.getPieceType() == ChessPiece.PieceType.ROOK){
+            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                return WHITE_ROOK;
+            } return BLACK_ROOK;
+        }
+        if (chessPiece.getPieceType() == ChessPiece.PieceType.BISHOP){
+            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                return WHITE_BISHOP;
+            } return BLACK_BISHOP;
+        }
+        if (chessPiece.getPieceType() == ChessPiece.PieceType.PAWN){
+            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                return WHITE_PAWN;
+            } return BLACK_PAWN;
+        }
+        if (chessPiece.getPieceType() == ChessPiece.PieceType.KING){
+            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                return WHITE_KING;
+            } return BLACK_KING;
+        }
+        if (chessPiece.getPieceType() == ChessPiece.PieceType.QUEEN){
+            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                return WHITE_KING;
+            } return BLACK_KING;
+        }
+        else{
+            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                return WHITE_KNIGHT;
+            }
+            return BLACK_KNIGHT;
         }
     }
 
