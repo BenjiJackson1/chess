@@ -36,6 +36,9 @@ public class PreLogin implements Client {
             var response = server.login(new LoginRequest(params[0], params[1]));
             return new ReplResponse("You signed in!", State.POSTLOGIN, response.authToken());
         } catch (Exception e){
+            if (params.length == 2){
+                return new ReplResponse("Incorrect username and password!", State.PRELOGIN, null);
+            }
             return new ReplResponse("Expected: <USERNAME> <PASSWORD>", State.PRELOGIN, null);
         }
     }
@@ -45,6 +48,9 @@ public class PreLogin implements Client {
             var response = server.register(new RegisterRequest(params[0], params[1], params[2]));
             return new ReplResponse("You registered!", State.POSTLOGIN, response.authToken());
         } catch (Exception e){
+            if (params.length == 3){
+                return new ReplResponse("A user with this username already exists!", State.PRELOGIN, null);
+            }
             return new ReplResponse("Expected: <USERNAME> <PASSWORD> <EMAIL>", State.PRELOGIN, null);
         }
     }

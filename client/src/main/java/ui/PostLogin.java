@@ -71,13 +71,15 @@ public class PostLogin implements Client{
             }       
             return new ReplResponse(gameInfo, State.POSTLOGIN, authToken);
         } catch (Exception e){
-            return new ReplResponse("Expected: <GAME_NAME>", State.POSTLOGIN, authToken);
+            return new ReplResponse("Unable to list the games!", State.POSTLOGIN, authToken);
         }
     }
 
     public ReplResponse joinGame(String ... params){
+        int numGames = 0;
         try{
             var gameList = server.listGames(authToken);
+            numGames = gameList.games().size();
             int num = Integer.parseInt(params[0]);
             int gameID = gameList.games().get(num-1).gameID();
             ChessGame game = gameList.games().get(num-1).game();
@@ -87,6 +89,20 @@ public class PostLogin implements Client{
             printGame(game, params[1]);
             return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken);
         } catch (Exception e){
+            if (params.length == 2){
+                System.out.print(SET_TEXT_COLOR_WHITE);
+                try{
+                    if (Integer.parseInt(params[0]) > numGames || Integer.parseInt(params[0]) < 0){
+                        return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
+                    }
+                } catch (NumberFormatException ex){
+                    return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
+                }
+                if (params[1].toLowerCase().equals("white") || params[1].toLowerCase().equals("black")){
+                    return new ReplResponse("Chosen color is already taken!", State.POSTLOGIN, authToken);
+                }
+            }
+            System.out.print(SET_TEXT_COLOR_WHITE);
             return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken);
         }
     }
@@ -101,6 +117,7 @@ public class PostLogin implements Client{
             printGame(game, null);
             return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken);
         } catch (Exception e){
+            System.out.print(SET_TEXT_COLOR_WHITE);
             return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
         }
     }

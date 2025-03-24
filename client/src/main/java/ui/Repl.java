@@ -17,6 +17,7 @@ public class Repl {
     }
 
     public void run() {
+        System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.println("♕ 240 Chess Client: ");
         System.out.print(preLoginClient.help().output());
 
