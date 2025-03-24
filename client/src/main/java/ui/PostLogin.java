@@ -98,7 +98,7 @@ public class PostLogin implements Client{
                 } catch (NumberFormatException ex){
                     return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
                 }
-                if (params[1].toLowerCase().equals("white") || params[1].toLowerCase().equals("black")){
+                if (params[1].equalsIgnoreCase("white") || params[1].equalsIgnoreCase("black")){
                     return new ReplResponse("Chosen color is already taken!", State.POSTLOGIN, authToken);
                 }
             }
