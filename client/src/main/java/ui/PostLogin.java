@@ -75,9 +75,10 @@ public class PostLogin implements Client{
             var gameList = server.listGames(authToken);
             int num = Integer.parseInt(params[0]);
             int gameID = gameList.games().get(num-1).gameID();
+            ChessGame game = gameList.games().get(num-1).game();
             System.out.println(gameList.games().get(num-1).gameName());
             server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
-            return new ReplResponse("You joined the Game", State.POSTLOGIN, authToken);
+            return new ReplResponse(game.getBoard().toString(), State.POSTLOGIN, authToken);
         } catch (Exception e){
             return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken);
         }

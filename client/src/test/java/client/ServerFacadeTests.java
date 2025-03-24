@@ -44,7 +44,7 @@ public class ServerFacadeTests {
     @Test
     @Order(2)
     @DisplayName("Failed Register - Multiple users with same username")
-    void register_fails() throws Exception {
+    void registerFailure() throws Exception {
         facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
         try {
             facade.register(new RegisterRequest("p3", "password", "p1@email.com"));
