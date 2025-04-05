@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessMove;
 import dataaccess.*;
 import model.GameData;
 import model.request.CreateGameRequest;
@@ -70,6 +71,14 @@ public class GameService {
     public GameData getGame(int gameID){
         try{
             return gameDAO.getGame(gameID);
+        } catch (Exception e){
+            return new GameData(-1, null, null, null, null);
+        }
+    }
+
+    public GameData makeMove(int gameID, GameData gameData){
+        try{
+            return gameDAO.updateGame(gameID, gameData);
         } catch (Exception e){
             return new GameData(-1, null, null, null, null);
         }

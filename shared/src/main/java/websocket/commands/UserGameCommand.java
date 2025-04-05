@@ -1,5 +1,7 @@
 package websocket.commands;
 
+import com.google.gson.Gson;
+
 import java.util.Objects;
 
 /**

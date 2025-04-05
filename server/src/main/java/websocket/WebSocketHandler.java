@@ -1,6 +1,7 @@
 package websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -39,6 +40,7 @@ public class WebSocketHandler {
             switch (command.getCommandType()) {
                 case CONNECT -> connect(authData.username(), session, command.getGameID());
                 case LEAVE -> leave(authData.username());
+                case MAKE_MOVE -> move(authData.username(), new Gson().fromJson(message, MakeMoveCommand.class));
             }
         }
     }
@@ -56,6 +58,16 @@ public class WebSocketHandler {
             connections.send(visitorName, notification);
         }
 
+    }
+
+    public void move(String visitorName, MakeMoveCommand command){
+        try{
+            GameData gameData = gameService.getGame(command.getGameID());
+            gameData.game().makeMove(command.getChessMove());
+            gameService.makeMove(gameData.gameID(), gameData);
+            connections.send(visitorName, new LoadGameMessage(gameData));
+            connections.broadcast(visitorName, new LoadGameMessage(gameData));
+        } catch (Exception e){}
     }
 
     private void leave(String visitorName) throws IOException {
