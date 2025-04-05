@@ -9,17 +9,25 @@ import model.result.*;
 import model.result.RegisterResult;
 import service.GameService;
 import service.UserService;
+import websocket.*;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import java.io.IOException;
 import spark.*;
+import websocket.messages.ServerMessage;
 
 public class Server {
     private final UserService userService = new UserService();
     private final GameService gameService = new GameService();
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/ws", webSocketHandler);
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
