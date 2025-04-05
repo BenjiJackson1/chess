@@ -67,6 +67,14 @@ public class GameService {
         return new ListGamesResult(gameDAO.listGames(), null);
     }
 
+    public GameData getGame(int gameID){
+        try{
+            return gameDAO.getGame(gameID);
+        } catch (Exception e){
+            return new GameData(-1, null, null, null, null);
+        }
+    }
+
     public void clear(){
         gameDAO.deleteAllGames();
     }
