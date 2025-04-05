@@ -32,7 +32,7 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         AuthData authData = userService.getAuth(command.getAuthToken());
         if (authData.authToken() == null){
-            connections.send(session.getRemote().toString(), new ErrorMessage("Error: unauthorized"));
+            connections.sendSession(session, new ErrorMessage("Error: unauthorized"));
         }
         else{
             connections.add(authData.username(), session);
@@ -45,10 +45,17 @@ public class WebSocketHandler {
 
     public void connect(String visitorName, Session session, int gameID) throws IOException {
         connections.add(visitorName, session);
-        var message = String.format("%s is in the game.", visitorName);
-        connections.broadcast(visitorName, new NotificationMessage(message));
-        var notification = new LoadGameMessage(new GameData(1, null, null, "test", new ChessGame()));
-        connections.send(visitorName, notification);
+        GameData gameData = gameService.getGame(gameID);
+        if (gameData.gameID() == -1){
+            connections.send(visitorName, new ErrorMessage("Error: invalid game"));
+        }
+        else{
+            var message = String.format("%s is in the game.", visitorName);
+            connections.broadcast(visitorName, new NotificationMessage(message));
+            var notification = new LoadGameMessage(gameData);
+            connections.send(visitorName, notification);
+        }
+
     }
 
     private void leave(String visitorName) throws IOException {

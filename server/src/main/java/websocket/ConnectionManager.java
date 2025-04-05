@@ -28,6 +28,12 @@ public class ConnectionManager {
         }
     }
 
+    public void sendSession(Session session, ServerMessage message) throws IOException {
+        if (session != null && session.isOpen()) {
+            session.getRemote().sendString(message.toString());
+        }
+    }
+
     public void broadcast(String excludeVisitorName, ServerMessage message) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
