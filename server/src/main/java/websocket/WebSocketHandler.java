@@ -38,22 +38,24 @@ public class WebSocketHandler {
         else{
             connections.add(authData.username(), session);
             switch (command.getCommandType()) {
-                case CONNECT -> connect(authData.username(), session, command.getGameID());
+                case CONNECT -> connect(authData.username(), session, command);
                 case LEAVE -> leave(authData.username());
                 case MAKE_MOVE -> move(authData.username(), new Gson().fromJson(message, MakeMoveCommand.class));
+                case RESIGN -> resign(authData.username(), command);
             }
         }
     }
 
-    public void connect(String visitorName, Session session, int gameID) throws IOException {
+    public void connect(String visitorName, Session session, UserGameCommand command) throws IOException {
         connections.add(visitorName, session);
-        GameData gameData = gameService.getGame(gameID);
+        GameData gameData = gameService.getGame(command.getGameID());
         if (gameData.gameID() == -1){
             connections.send(visitorName, new ErrorMessage("Error: invalid game"));
         }
         else{
+            connections.joinGame(command.getGameID(), visitorName);
             var message = String.format("%s is in the game.", visitorName);
-            connections.broadcast(visitorName, new NotificationMessage(message));
+            connections.broadcastToGame(command.getGameID(),visitorName, new NotificationMessage(message));
             var notification = new LoadGameMessage(gameData);
             connections.send(visitorName, notification);
         }
@@ -63,7 +65,10 @@ public class WebSocketHandler {
     public void move(String visitorName, MakeMoveCommand command){
         try{
             GameData gameData = gameService.getGame(command.getGameID());
-            if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
+            if (connections.isGameOver(command.getGameID())){
+                connections.send(visitorName, new ErrorMessage("Error: game is over"));
+            }
+            else if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                     gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                 connections.send(visitorName, new ErrorMessage("Error: game is over"));
             }
@@ -75,8 +80,8 @@ public class WebSocketHandler {
                 gameData.game().makeMove(command.getChessMove());
                 gameService.makeMove(gameData.gameID(), gameData);
                 connections.send(visitorName, new LoadGameMessage(gameData));
-                connections.broadcast(visitorName, new NotificationMessage(String.format("%s made a move.", visitorName)));
-                connections.broadcast(visitorName, new LoadGameMessage(gameData));
+                connections.broadcastToGame(command.getGameID(),visitorName, new NotificationMessage(String.format("%s made a move.", visitorName)));
+                connections.broadcastToGame(command.getGameID(),visitorName, new LoadGameMessage(gameData));
             }
         } catch (Exception e){
             try{
@@ -90,5 +95,16 @@ public class WebSocketHandler {
         var message = String.format("%s left the game.", visitorName);
         var notification = new NotificationMessage(message);
         connections.send(visitorName, notification);
+    }
+
+    public void resign(String visitorName, UserGameCommand command) throws IOException{
+        if (connections.isGameOver(command.getGameID())){
+            connections.send(visitorName, new NotificationMessage("The game is over."));
+        }
+        else{
+            connections.setGameOver(command.getGameID());
+            connections.send(visitorName, new NotificationMessage("You resigned from the match. Loser."));
+            connections.broadcastToGame(command.getGameID() ,visitorName, new NotificationMessage(String.format("%s resigned.", visitorName)));
+        }
     }
 }
