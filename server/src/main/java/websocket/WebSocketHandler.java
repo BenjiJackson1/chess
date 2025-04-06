@@ -5,6 +5,7 @@ import chess.ChessMove;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -39,7 +40,7 @@ public class WebSocketHandler {
             connections.add(authData.username(), session);
             switch (command.getCommandType()) {
                 case CONNECT -> connect(authData.username(), session, command);
-                case LEAVE -> leave(authData.username());
+                case LEAVE -> leave(authData.username(), command);
                 case MAKE_MOVE -> move(authData.username(), new Gson().fromJson(message, MakeMoveCommand.class));
                 case RESIGN -> resign(authData.username(), command);
             }
@@ -65,7 +66,7 @@ public class WebSocketHandler {
     public void move(String visitorName, MakeMoveCommand command){
         try{
             GameData gameData = gameService.getGame(command.getGameID());
-            if (connections.isGameOver(command.getGameID())){
+            if (gameData.game().isOver()){
                 connections.send(visitorName, new ErrorMessage("Error: game is over"));
             }
             else if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
@@ -90,21 +91,28 @@ public class WebSocketHandler {
         }
     }
 
-    private void leave(String visitorName) throws IOException {
+    private void leave(String visitorName, UserGameCommand command) throws IOException {
         connections.remove(visitorName);
         var message = String.format("%s left the game.", visitorName);
         var notification = new NotificationMessage(message);
         connections.send(visitorName, notification);
+        connections.broadcastToGame(command.getGameID(), visitorName, notification);
     }
 
     public void resign(String visitorName, UserGameCommand command) throws IOException{
-        if (connections.isGameOver(command.getGameID())){
-            connections.send(visitorName, new NotificationMessage("The game is over."));
+        GameData gameData = gameService.getGame(command.getGameID());
+        if (gameData.game().isOver()) {
+            connections.send(visitorName, new ErrorMessage("Error: game is already over"));
+            return;
         }
-        else{
-            connections.setGameOver(command.getGameID());
-            connections.send(visitorName, new NotificationMessage("You resigned from the match. Loser."));
-            connections.broadcastToGame(command.getGameID() ,visitorName, new NotificationMessage(String.format("%s resigned.", visitorName)));
+        if (!visitorName.equals(gameData.whiteUsername()) && !visitorName.equals(gameData.blackUsername())) {
+            connections.send(visitorName, new ErrorMessage("Error: only players can resign"));
+            return;
         }
+        gameData.game().setOver(true);
+        gameService.makeMove(command.getGameID(), gameData);
+        connections.setGameOver(command.getGameID());
+        connections.send(visitorName, new NotificationMessage("You resigned from the match. Loser."));
+        connections.broadcastToGame(command.getGameID() ,visitorName, new NotificationMessage(String.format("%s resigned.", visitorName)));
     }
 }
