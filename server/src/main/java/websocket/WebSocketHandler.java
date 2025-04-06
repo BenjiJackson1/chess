@@ -66,7 +66,12 @@ public class WebSocketHandler {
             if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                     gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                 connections.send(visitorName, new ErrorMessage("Error: game is over"));
-            }else{
+            }
+            else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE && !gameData.whiteUsername().equals(visitorName)){
+                connections.send(visitorName, new ErrorMessage("Error: not your turn"));
+            } else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.BLACK && !gameData.blackUsername().equals(visitorName)) {
+                connections.send(visitorName, new ErrorMessage("Error: not your turn"));
+            } else{
                 gameData.game().makeMove(command.getChessMove());
                 gameService.makeMove(gameData.gameID(), gameData);
                 connections.send(visitorName, new LoadGameMessage(gameData));
