@@ -63,11 +63,21 @@ public class WebSocketHandler {
     public void move(String visitorName, MakeMoveCommand command){
         try{
             GameData gameData = gameService.getGame(command.getGameID());
-            gameData.game().makeMove(command.getChessMove());
-            gameService.makeMove(gameData.gameID(), gameData);
-            connections.send(visitorName, new LoadGameMessage(gameData));
-            connections.broadcast(visitorName, new LoadGameMessage(gameData));
-        } catch (Exception e){}
+            if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                    gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                connections.send(visitorName, new ErrorMessage("Error: game is over"));
+            }else{
+                gameData.game().makeMove(command.getChessMove());
+                gameService.makeMove(gameData.gameID(), gameData);
+                connections.send(visitorName, new LoadGameMessage(gameData));
+                connections.broadcast(visitorName, new NotificationMessage(String.format("%s made a move.", visitorName)));
+                connections.broadcast(visitorName, new LoadGameMessage(gameData));
+            }
+        } catch (Exception e){
+            try{
+                connections.send(visitorName, new ErrorMessage("Error: invalid move"));
+            } catch (IOException x){}
+        }
     }
 
     private void leave(String visitorName) throws IOException {

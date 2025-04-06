@@ -50,7 +50,7 @@ public class MySQLGameDAO extends MySQLDAO implements GameDAO{
         if (getGame(gameID) == null){
             throw new DataAccessException("Error: bad request");
         }
-        var json = new Gson().toJson(updatedGameData);
+        var json = new Gson().toJson(updatedGameData.game());
         var statement = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE id = ?";
         executeUpdate(statement, updatedGameData.whiteUsername(),
                 updatedGameData.blackUsername(), updatedGameData.gameName(), json, gameID);

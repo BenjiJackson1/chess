@@ -301,7 +301,7 @@ public class DAOTests {
             }
             gameDAO.updateGame(gameData.gameID(), new GameData(gameData.gameID(), gameData.whiteUsername(),
                     gameData.blackUsername(), gameData.gameName(), newChessGame));
-            Assertions.assertEquals( "WHITE", gameDAO.getGame(1).game().getTeamTurn().toString(), "Move was not made");
+            Assertions.assertEquals( "BLACK", gameDAO.getGame(gameData.gameID()).game().getTeamTurn().toString(), "Move was not made");
         } catch (DataAccessException e){
             Assertions.fail(e.getMessage());
         }
