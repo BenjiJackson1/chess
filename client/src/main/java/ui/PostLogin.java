@@ -7,6 +7,7 @@ import model.request.LogoutRequest;
 import serverfacade.ServerFacade;
 import static ui.ChessBoardPrinter.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.*;
@@ -28,7 +29,7 @@ public class PostLogin implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "quit" -> new ReplResponse("quit", State.POSTLOGIN, authToken, -1);
+                case "quit" -> new ReplResponse("quit", State.POSTLOGIN, authToken, -1, null);
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "play" -> joinGame(params);
@@ -37,25 +38,25 @@ public class PostLogin implements Client{
                 default -> help();
             };
         } catch (Exception e) {
-            return new ReplResponse(e.getMessage(), State.POSTLOGIN, authToken, -1);
+            return new ReplResponse(e.getMessage(), State.POSTLOGIN, authToken, -1, null);
         }
     }
 
     public ReplResponse logout(){
         try{
             server.logout(new LogoutRequest(authToken));
-            return new ReplResponse("You logged out!", State.PRELOGIN, authToken, -1);
+            return new ReplResponse("You logged out!", State.PRELOGIN, authToken, -1, null);
         } catch (Exception e){
-            return new ReplResponse("Unable to log out. Try quitting.", State.POSTLOGIN, authToken, -1);
+            return new ReplResponse("Unable to log out. Try quitting.", State.POSTLOGIN, authToken, -1, null);
         }
     }
 
     public ReplResponse createGame(String ... params){
         try{
             server.createGame(new CreateGameRequest(params[0]), authToken);
-            return new ReplResponse("Game was created!", State.POSTLOGIN, authToken, -1);
+            return new ReplResponse("Game was created!", State.POSTLOGIN, authToken, -1, null);
         } catch (Exception e){
-            return new ReplResponse("Expected: <GAME_NAME>", State.POSTLOGIN, authToken, -1);
+            return new ReplResponse("Expected: <GAME_NAME>", State.POSTLOGIN, authToken, -1, null);
         }
     }
 
@@ -68,9 +69,9 @@ public class PostLogin implements Client{
                 gameInfo = gameInfo + index + ". " + game.gameName() + " WHITE: " + game.whiteUsername() + " BLACK: " + game.blackUsername() + "\n";
                 index += 1;
             }       
-            return new ReplResponse(gameInfo, State.POSTLOGIN, authToken, -1);
+            return new ReplResponse(gameInfo, State.POSTLOGIN, authToken, -1, null);
         } catch (Exception e){
-            return new ReplResponse("Unable to list the games!", State.POSTLOGIN, authToken, -1);
+            return new ReplResponse("Unable to list the games!", State.POSTLOGIN, authToken, -1, null);
         }
     }
 
@@ -85,24 +86,24 @@ public class PostLogin implements Client{
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
             System.out.print(SET_TEXT_COLOR_BLACK);
             server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
-            printGame(game, params[1]);
-            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.GAMEPLAY, authToken, gameID);
+            printGame(game, params[1], new ArrayList<>());
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.GAMEPLAY, authToken, gameID, params[1].toUpperCase());
         } catch (Exception e){
             if (params.length == 2){
                 System.out.print(SET_TEXT_COLOR_WHITE);
                 try{
                     if (Integer.parseInt(params[0]) > numGames || Integer.parseInt(params[0]) < 0){
-                        return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1);
+                        return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1, null);
                     }
                 } catch (NumberFormatException ex){
-                    return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1);
+                    return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1, null);
                 }
                 if (params[1].equalsIgnoreCase("white") || params[1].equalsIgnoreCase("black")){
-                    return new ReplResponse("Chosen color is already taken!", State.POSTLOGIN, authToken, -1);
+                    return new ReplResponse("Chosen color is already taken!", State.POSTLOGIN, authToken, -1, null);
                 }
             }
             System.out.print(SET_TEXT_COLOR_WHITE);
-            return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken, -1);
+            return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken, -1, null);
         }
     }
 
@@ -113,11 +114,11 @@ public class PostLogin implements Client{
             ChessGame game = gameList.games().get(num-1).game();
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
             System.out.print(SET_TEXT_COLOR_BLACK);
-            printGame(game, null);
-            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken, -1);
+            printGame(game, null, new ArrayList<>());
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken, -1, null);
         } catch (Exception e){
             System.out.print(SET_TEXT_COLOR_WHITE);
-            return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1);
+            return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1, null);
         }
     }
 
@@ -130,6 +131,6 @@ public class PostLogin implements Client{
                 - observe <ID> - to watch a game
                 - quit - playing chess
                 - help - with possible commands
-                """, State.POSTLOGIN, authToken, -1);
+                """, State.POSTLOGIN, authToken, -1, null);
     }
 }

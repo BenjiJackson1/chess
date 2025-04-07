@@ -4,11 +4,13 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
+import java.util.List;
+
 import static ui.EscapeSequences.*;
 
 public class ChessBoardPrinter {
 
-    public static void printGame(ChessGame chessGame, String teamColor){
+    public static void printGame(ChessGame chessGame, String teamColor, List<ChessPosition> highlights){
         if (teamColor == null || teamColor.equalsIgnoreCase("white")){
             System.out.print("   ");
             System.out.print(" a ");
@@ -24,10 +26,19 @@ public class ChessBoardPrinter {
                 System.out.print(SET_BG_COLOR_LIGHT_GREY);
                 System.out.print(" "+ j +" ");
                 for (int i = 1; i < 9; i++) {
+                    ChessPosition pos = new ChessPosition(j, i);
                     if ((i+j) % 2 == 0){
-                        System.out.print(SET_BG_COLOR_BLUE);
+                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
+                            System.out.print(SET_BG_COLOR_DARK_GREEN);
+                        } else{
+                            System.out.print(SET_BG_COLOR_BLUE);
+                        }
                     }else{
-                        System.out.print(SET_BG_COLOR_WHITE);
+                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
+                            System.out.print(SET_BG_COLOR_GREEN);
+                        } else{
+                            System.out.print(SET_BG_COLOR_WHITE);
+                        }
                     }
                     System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(j,i))));
                 }
@@ -61,10 +72,19 @@ public class ChessBoardPrinter {
                 int col = 9 - j;
                 System.out.print(" "+ col +" ");
                 for (int i = 1; i < 9; i++) {
+                    ChessPosition pos = new ChessPosition(9 - j, 9 - i);
                     if ((i+j) % 2 == 0){
-                        System.out.print(SET_BG_COLOR_BLUE);
+                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
+                            System.out.print(SET_BG_COLOR_DARK_GREEN);
+                        } else{
+                            System.out.print(SET_BG_COLOR_BLUE);
+                        }
                     }else{
-                        System.out.print(SET_BG_COLOR_WHITE);
+                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
+                            System.out.print(SET_BG_COLOR_GREEN);
+                        } else{
+                            System.out.print(SET_BG_COLOR_WHITE);
+                        }
                     }
                     System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(9-j,9-i))));
                 }
