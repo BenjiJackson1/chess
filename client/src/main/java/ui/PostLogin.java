@@ -87,7 +87,7 @@ public class PostLogin implements Client{
             System.out.print(SET_TEXT_COLOR_BLACK);
             server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
             printGame(game, params[1]);
-            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken);
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.GAMEPLAY, authToken);
         } catch (Exception e){
             if (params.length == 2){
                 System.out.print(SET_TEXT_COLOR_WHITE);

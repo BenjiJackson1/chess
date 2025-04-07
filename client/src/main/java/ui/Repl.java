@@ -36,6 +36,9 @@ public class Repl {
                 } else if (replResponse.newState() == State.POSTLOGIN) {
                     currentClient = new PostLogin(url, replResponse.authToken());
                     state = State.POSTLOGIN;
+                } else if (replResponse.newState() == State.GAMEPLAY){
+                    currentClient = new Gameplay(replResponse.authToken());
+                    state = State.GAMEPLAY;
                 }
                 System.out.print(SET_BG_COLOR_MAGENTA + result);
             } catch (Throwable e) {
@@ -53,6 +56,9 @@ public class Repl {
         }
         if (state.name() == State.POSTLOGIN.name()){
             termCommand = "[LOGGED_IN] ";
+        }
+        if (state.name() == State.GAMEPLAY.name()){
+            termCommand = "[IN_GAME] ";
         }
         System.out.print("\n" + RESET_BG_COLOR + termCommand +">>> " + SET_BG_COLOR_GREEN);
     }
