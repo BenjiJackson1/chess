@@ -92,6 +92,17 @@ public class WebSocketHandler {
     }
 
     private void leave(String visitorName, UserGameCommand command) throws IOException {
+        GameData gameData = gameService.getGame(command.getGameID());
+        if (visitorName.equals(gameData.whiteUsername())){
+            gameService.makeMove(gameData.gameID(), new GameData(gameData.gameID(), null, gameData.blackUsername(),
+                    gameData.gameName(), gameData.game()));
+
+        }
+        if (visitorName.equals(gameData.blackUsername())){
+            gameService.makeMove(gameData.gameID(), new GameData(gameData.gameID(), gameData.whiteUsername(), null,
+                    gameData.gameName(), gameData.game()));
+
+        }
         connections.remove(visitorName);
         var message = String.format("%s left the game.", visitorName);
         var notification = new NotificationMessage(message);
