@@ -37,7 +37,7 @@ public class Repl {
                     currentClient = new PostLogin(url, replResponse.authToken());
                     state = State.POSTLOGIN;
                 } else if (replResponse.newState() == State.GAMEPLAY){
-                    currentClient = new Gameplay(replResponse.authToken());
+                    currentClient = new Gameplay(url, replResponse.authToken(), replResponse.gameID());
                     state = State.GAMEPLAY;
                 }
                 System.out.print(SET_BG_COLOR_MAGENTA + result);

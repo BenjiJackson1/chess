@@ -1,12 +1,11 @@
 package ui;
 
 import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.LogoutRequest;
 import serverfacade.ServerFacade;
+import static ui.ChessBoardPrinter.*;
 
 import java.util.Arrays;
 
@@ -29,7 +28,7 @@ public class PostLogin implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "quit" -> new ReplResponse("quit", State.POSTLOGIN, authToken);
+                case "quit" -> new ReplResponse("quit", State.POSTLOGIN, authToken, -1);
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "play" -> joinGame(params);
@@ -38,25 +37,25 @@ public class PostLogin implements Client{
                 default -> help();
             };
         } catch (Exception e) {
-            return new ReplResponse(e.getMessage(), State.POSTLOGIN, authToken);
+            return new ReplResponse(e.getMessage(), State.POSTLOGIN, authToken, -1);
         }
     }
 
     public ReplResponse logout(){
         try{
             server.logout(new LogoutRequest(authToken));
-            return new ReplResponse("You logged out!", State.PRELOGIN, authToken);
+            return new ReplResponse("You logged out!", State.PRELOGIN, authToken, -1);
         } catch (Exception e){
-            return new ReplResponse("Unable to log out. Try quitting.", State.POSTLOGIN, authToken);
+            return new ReplResponse("Unable to log out. Try quitting.", State.POSTLOGIN, authToken, -1);
         }
     }
 
     public ReplResponse createGame(String ... params){
         try{
             server.createGame(new CreateGameRequest(params[0]), authToken);
-            return new ReplResponse("Game was created!", State.POSTLOGIN, authToken);
+            return new ReplResponse("Game was created!", State.POSTLOGIN, authToken, -1);
         } catch (Exception e){
-            return new ReplResponse("Expected: <GAME_NAME>", State.POSTLOGIN, authToken);
+            return new ReplResponse("Expected: <GAME_NAME>", State.POSTLOGIN, authToken, -1);
         }
     }
 
@@ -69,9 +68,9 @@ public class PostLogin implements Client{
                 gameInfo = gameInfo + index + ". " + game.gameName() + " WHITE: " + game.whiteUsername() + " BLACK: " + game.blackUsername() + "\n";
                 index += 1;
             }       
-            return new ReplResponse(gameInfo, State.POSTLOGIN, authToken);
+            return new ReplResponse(gameInfo, State.POSTLOGIN, authToken, -1);
         } catch (Exception e){
-            return new ReplResponse("Unable to list the games!", State.POSTLOGIN, authToken);
+            return new ReplResponse("Unable to list the games!", State.POSTLOGIN, authToken, -1);
         }
     }
 
@@ -87,23 +86,23 @@ public class PostLogin implements Client{
             System.out.print(SET_TEXT_COLOR_BLACK);
             server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
             printGame(game, params[1]);
-            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.GAMEPLAY, authToken);
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.GAMEPLAY, authToken, gameID);
         } catch (Exception e){
             if (params.length == 2){
                 System.out.print(SET_TEXT_COLOR_WHITE);
                 try{
                     if (Integer.parseInt(params[0]) > numGames || Integer.parseInt(params[0]) < 0){
-                        return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
+                        return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1);
                     }
                 } catch (NumberFormatException ex){
-                    return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
+                    return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1);
                 }
                 if (params[1].equalsIgnoreCase("white") || params[1].equalsIgnoreCase("black")){
-                    return new ReplResponse("Chosen color is already taken!", State.POSTLOGIN, authToken);
+                    return new ReplResponse("Chosen color is already taken!", State.POSTLOGIN, authToken, -1);
                 }
             }
             System.out.print(SET_TEXT_COLOR_WHITE);
-            return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken);
+            return new ReplResponse("Expected: <ID> [WHITE|BLACK]", State.POSTLOGIN, authToken, -1);
         }
     }
 
@@ -115,124 +114,10 @@ public class PostLogin implements Client{
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
             System.out.print(SET_TEXT_COLOR_BLACK);
             printGame(game, null);
-            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken);
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken, -1);
         } catch (Exception e){
             System.out.print(SET_TEXT_COLOR_WHITE);
-            return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken);
-        }
-    }
-
-    private void printGame(ChessGame chessGame, String teamColor){
-        if (teamColor == null || teamColor.equalsIgnoreCase("white")){
-            System.out.print("   ");
-            System.out.print(" a ");
-            System.out.print(" b ");
-            System.out.print(" c ");
-            System.out.print(" d ");
-            System.out.print(" e ");
-            System.out.print(" f ");
-            System.out.print(" g ");
-            System.out.print(" h ");
-            System.out.print("   \n");
-            for (int j = 8; j > 0; j--) {
-                System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                System.out.print(" "+ j +" ");
-                for (int i = 1; i < 9; i++) {
-                    if ((i+j) % 2 == 0){
-                        System.out.print(SET_BG_COLOR_BLUE);
-                    }else{
-                        System.out.print(SET_BG_COLOR_WHITE);
-                    }
-                    System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(j,i))));
-                }
-                System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                System.out.print(" "+ j +" \n");
-            }
-            System.out.print("   ");
-            System.out.print(" a ");
-            System.out.print(" b ");
-            System.out.print(" c ");
-            System.out.print(" d ");
-            System.out.print(" e ");
-            System.out.print(" f ");
-            System.out.print(" g ");
-            System.out.print(" h ");
-            System.out.print("   \n");
-        }
-        else{
-            System.out.print("   ");
-            System.out.print(" h ");
-            System.out.print(" g ");
-            System.out.print(" f ");
-            System.out.print(" e ");
-            System.out.print(" d ");
-            System.out.print(" c ");
-            System.out.print(" b ");
-            System.out.print(" a ");
-            System.out.print("   \n");
-            for (int j = 8; j > 0; j--) {
-                System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                int col = 9 - j;
-                System.out.print(" "+ col +" ");
-                for (int i = 1; i < 9; i++) {
-                    if ((i+j) % 2 == 0){
-                        System.out.print(SET_BG_COLOR_BLUE);
-                    }else{
-                        System.out.print(SET_BG_COLOR_WHITE);
-                    }
-                    System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(9-j,9-i))));
-                }
-                System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                System.out.print(" "+ col +" \n");
-            }
-            System.out.print("   ");
-            System.out.print(" h ");
-            System.out.print(" g ");
-            System.out.print(" f ");
-            System.out.print(" e ");
-            System.out.print(" d ");
-            System.out.print(" c ");
-            System.out.print(" b ");
-            System.out.print(" a ");
-            System.out.print("   \n");
-        }
-        System.out.print(SET_TEXT_COLOR_WHITE);
-    }
-
-    private String pieceGetter(ChessPiece chessPiece){
-        if (chessPiece == null){
-            return EMPTY;
-        }
-        if (chessPiece.getPieceType() == ChessPiece.PieceType.ROOK){
-            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                return WHITE_ROOK;
-            } return BLACK_ROOK;
-        }
-        if (chessPiece.getPieceType() == ChessPiece.PieceType.BISHOP){
-            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                return WHITE_BISHOP;
-            } return BLACK_BISHOP;
-        }
-        if (chessPiece.getPieceType() == ChessPiece.PieceType.PAWN){
-            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                return WHITE_PAWN;
-            } return BLACK_PAWN;
-        }
-        if (chessPiece.getPieceType() == ChessPiece.PieceType.KING){
-            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                return WHITE_KING;
-            } return BLACK_KING;
-        }
-        if (chessPiece.getPieceType() == ChessPiece.PieceType.QUEEN){
-            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                return WHITE_QUEEN;
-            } return BLACK_QUEEN;
-        }
-        else{
-            if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
-                return WHITE_KNIGHT;
-            }
-            return BLACK_KNIGHT;
+            return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1);
         }
     }
 
@@ -245,6 +130,6 @@ public class PostLogin implements Client{
                 - observe <ID> - to watch a game
                 - quit - playing chess
                 - help - with possible commands
-                """, State.POSTLOGIN, authToken);
+                """, State.POSTLOGIN, authToken, -1);
     }
 }

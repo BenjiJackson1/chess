@@ -1,12 +1,18 @@
 package ui;
 
+import serverfacade.ServerFacade;
+
 import java.util.Arrays;
 
 public class Gameplay implements Client{
+    private final ServerFacade server;
     private final String authToken;
+    private final int gameID;
 
-    public Gameplay(String authToken){
+    public Gameplay(String serverUrl, String authToken, int gameID){
+        server = new ServerFacade(serverUrl);
         this.authToken = authToken;
+        this.gameID = gameID;
     }
 
     public ReplResponse eval(String input) {
@@ -15,12 +21,17 @@ public class Gameplay implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "leave" -> new ReplResponse("quit", State.POSTLOGIN, authToken);
+                case "leave" -> new ReplResponse("quit", State.POSTLOGIN, authToken, -1);
+                case "highlight" -> highlight(params);
                 default -> help();
             };
         } catch (Exception e) {
-            return new ReplResponse(e.getMessage(), State.GAMEPLAY, authToken);
+            return new ReplResponse(e.getMessage(), State.GAMEPLAY, authToken, gameID);
         }
+    }
+
+    public ReplResponse highlight(String ... params){
+        return new ReplResponse("FIX MEE", State.GAMEPLAY, authToken, gameID);
     }
 
     public ReplResponse help() {
@@ -31,6 +42,6 @@ public class Gameplay implements Client{
                 - resign - forfeit the current game
                 - leave - to leave the current game
                 - help - with possible commands
-                """, State.GAMEPLAY, authToken);
+                """, State.GAMEPLAY, authToken, gameID);
     }
 }

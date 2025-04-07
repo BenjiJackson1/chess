@@ -1,3 +1,3 @@
 package ui;
 
-public record ReplResponse (String output, State newState, String authToken){}
+public record ReplResponse (String output, State newState, String authToken, int gameID){}
