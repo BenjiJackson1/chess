@@ -1,8 +1,13 @@
 package ui;
 
 import websocket.NotificationHandler;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
+import static ui.ChessBoardPrinter.*;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -11,12 +16,14 @@ public class Repl implements NotificationHandler {
     private Client currentClient;
     private String url;
     private State state;
+    private String teamColor;
 
     public Repl(String serverUrl){
         url = serverUrl;
         preLoginClient = new PreLogin(serverUrl);
         currentClient = preLoginClient;
         state = State.PRELOGIN;
+        teamColor = null;
     }
 
     public void run() {
@@ -40,8 +47,11 @@ public class Repl implements NotificationHandler {
                     currentClient = new PostLogin(url, replResponse.authToken());
                     state = State.POSTLOGIN;
                 } else if (replResponse.newState() == State.GAMEPLAY){
-                    currentClient = new Gameplay(url, replResponse.authToken(),
-                            replResponse.gameID(), replResponse.teamColor(), this);
+                    if (state != State.GAMEPLAY) {
+                        currentClient = new Gameplay(url, replResponse.authToken(),
+                                replResponse.gameID(), replResponse.teamColor(), this);
+                        teamColor = replResponse.teamColor();
+                    }
                     state = State.GAMEPLAY;
                 }
                 System.out.print(SET_BG_COLOR_MAGENTA + result);
@@ -54,7 +64,26 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(ServerMessage notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.toString());
+        if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION){
+            NotificationMessage notificationMessage = (NotificationMessage) notification;
+            System.out.println(SET_BG_COLOR_MAGENTA);
+            System.out.println(SET_TEXT_COLOR_WHITE + notificationMessage.getMessage());
+        }
+        else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+            ErrorMessage notificationMessage = (ErrorMessage) notification;
+            System.out.println(SET_BG_COLOR_MAGENTA);
+            System.out.println(SET_TEXT_COLOR_WHITE + notificationMessage.getErrorMessage());
+        }
+        else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            LoadGameMessage notificationMessage = (LoadGameMessage) notification;
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            System.out.println("\n");
+            printGame(notificationMessage.getGame().game(), teamColor, new ArrayList<>());
+        }else{
+            System.out.println(SET_TEXT_COLOR_RED + notification);
+        }
+        System.out.print(SET_TEXT_COLOR_WHITE);
         printPrompt();
     }
 

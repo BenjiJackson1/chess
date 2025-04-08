@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import exception.ResponseException;
 import serverfacade.ServerFacade;
@@ -41,8 +42,11 @@ public class Gameplay implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "resign" -> resign();
                 case "leave" -> leave();
                 case "highlight" -> highlight(params);
+                case "redraw" -> redraw();
+                case "move" -> move(params);
                 default -> help();
             };
         } catch (Exception e) {
@@ -50,13 +54,61 @@ public class Gameplay implements Client{
         }
     }
 
-    public ReplResponse leave(){
+    public ReplResponse resign(){
         try{
             ws.resign(authToken, gameID);
-            return new ReplResponse("You resigned from the game", State.POSTLOGIN, authToken, -1, null);
+            return new ReplResponse("", State.GAMEPLAY, authToken, gameID, teamColor);
         } catch (Exception e){
-            return new ReplResponse("Unable to resign", State.GAMEPLAY, authToken, gameID, teamColor);
+            return new ReplResponse("Unable to resign.", State.GAMEPLAY, authToken, gameID, teamColor);
         }
+    }
+
+    public ReplResponse leave(){
+        try{
+            ws.leave(authToken, gameID);
+            return new ReplResponse("You left the game.", State.POSTLOGIN, authToken, -1, null);
+        } catch (Exception e){
+            return new ReplResponse("Unable to leave the game.", State.GAMEPLAY, authToken, gameID, teamColor);
+        }
+    }
+
+    public ReplResponse move(String ... params){
+        if (params.length < 1 || params[0].length() != 2 || params[1].length() != 2) {
+            return new ReplResponse("Expected: <START> <END>", State.GAMEPLAY, authToken, gameID, teamColor);
+        }
+        char c = Character.toLowerCase(params[0].charAt(0));
+        char r = params[0].charAt(1);
+        char c1 = Character.toLowerCase(params[1].charAt(0));
+        char r1 = params[1].charAt(1);
+        if (c < 'a' || c > 'h' || r < '1' || r > '8' || c1 < 'a' || c1 > 'h' || r1 < '1' || r1 > '8') {
+            return new ReplResponse("Not a valid move!", State.GAMEPLAY, authToken, gameID, teamColor);
+        }
+        int row = Character.getNumericValue(params[0].charAt(1));
+        int col = c - 'a' +1;
+        int row1 = Character.getNumericValue(params[1].charAt(1));
+        int col1 = c1 - 'a' +1;
+        try{
+            ws.move(authToken, gameID, new ChessMove(new ChessPosition(row,col), new ChessPosition(row1,col1), null));
+        }catch (ResponseException e){
+
+        }
+        return new ReplResponse("", State.GAMEPLAY, authToken, gameID, teamColor);
+    }
+
+    public ReplResponse redraw(){
+        try{
+            var gameList = server.listGames(authToken);
+            ChessGame game = gameList.games().get(gameID-1).game();
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+            System.out.print(SET_TEXT_COLOR_BLACK);
+            printGame(game, teamColor, new ArrayList<>());
+            return new ReplResponse("Game: " + gameList.games().get(gameID-1).gameName(), State.GAMEPLAY,
+                    authToken, gameID, teamColor);
+
+        } catch (ResponseException e){
+            return new ReplResponse("Unable to draw the board.", State.GAMEPLAY, authToken, gameID, teamColor);
+        }
+
     }
 
     public ReplResponse highlight(String ... params){
@@ -92,7 +144,7 @@ public class Gameplay implements Client{
         return new ReplResponse("""
                 - redraw - to redraw the board
                 - highlight <PIECE> - to highlight all the legal moves
-                - move <START> <END> - to move a piece
+                - move <START> <END> <PROMOTE_PIECE?> - to move a piece
                 - resign - forfeit the current game
                 - leave - to leave the current game
                 - help - with possible commands
