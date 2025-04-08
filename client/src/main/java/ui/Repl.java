@@ -1,15 +1,18 @@
 package ui;
 
+import websocket.NotificationHandler;
+import websocket.messages.ServerMessage;
+
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final PreLogin preLoginClient;
     private Client currentClient;
     private String url;
     private State state;
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl){
         url = serverUrl;
         preLoginClient = new PreLogin(serverUrl);
         currentClient = preLoginClient;
@@ -38,7 +41,7 @@ public class Repl {
                     state = State.POSTLOGIN;
                 } else if (replResponse.newState() == State.GAMEPLAY){
                     currentClient = new Gameplay(url, replResponse.authToken(),
-                            replResponse.gameID(), replResponse.teamColor());
+                            replResponse.gameID(), replResponse.teamColor(), this);
                     state = State.GAMEPLAY;
                 }
                 System.out.print(SET_BG_COLOR_MAGENTA + result);
@@ -48,6 +51,11 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage notification) {
+        System.out.println(SET_TEXT_COLOR_RED + notification.toString());
+        printPrompt();
     }
 
     private void printPrompt() {
