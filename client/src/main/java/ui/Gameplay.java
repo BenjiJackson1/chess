@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
 import serverfacade.ServerFacade;
@@ -73,7 +74,7 @@ public class Gameplay implements Client{
     }
 
     public ReplResponse move(String ... params){
-        if (params.length < 1 || params[0].length() != 2 || params[1].length() != 2) {
+        if (params.length < 2 || params[0].length() != 2 || params[1].length() != 2) {
             return new ReplResponse("Expected: <START> <END>", State.GAMEPLAY, authToken, gameID, teamColor);
         }
         char c = Character.toLowerCase(params[0].charAt(0));
@@ -87,8 +88,23 @@ public class Gameplay implements Client{
         int col = c - 'a' +1;
         int row1 = Character.getNumericValue(params[1].charAt(1));
         int col1 = c1 - 'a' +1;
+        ChessPiece.PieceType promotePiece = null;
+        if (params.length == 3){
+            char promote = Character.toLowerCase(params[2].charAt(0));
+            switch (promote){
+                case 'q' -> promotePiece = ChessPiece.PieceType.QUEEN;
+                case 'r' -> promotePiece = ChessPiece.PieceType.ROOK;
+                case 'b' -> promotePiece = ChessPiece.PieceType.BISHOP;
+                case 'n' -> promotePiece = ChessPiece.PieceType.KNIGHT;
+                case 'p' -> promotePiece = ChessPiece.PieceType.PAWN;
+                case 'k' -> promotePiece = ChessPiece.PieceType.KING;
+                default -> {
+                    return new ReplResponse("Invalid promotion piece. Use k|q|r|b|n|p.", State.GAMEPLAY, authToken, gameID, teamColor);
+                }
+            }
+        }
         try{
-            ws.move(authToken, gameID, new ChessMove(new ChessPosition(row,col), new ChessPosition(row1,col1), null));
+            ws.move(authToken, gameID, new ChessMove(new ChessPosition(row,col), new ChessPosition(row1,col1), promotePiece));
         }catch (ResponseException e){
 
         }
@@ -144,7 +160,7 @@ public class Gameplay implements Client{
         return new ReplResponse("""
                 - redraw - to redraw the board
                 - highlight <PIECE> - to highlight all the legal moves
-                - move <START> <END> <PROMOTE_PIECE?> - to move a piece
+                - move <START> <END> <PROMOTE_PIECE?> (promote k|q|n|r|b|p) - to move a piece
                 - resign - forfeit the current game
                 - leave - to leave the current game
                 - help - with possible commands
