@@ -82,11 +82,7 @@ public class PostLogin implements Client{
             numGames = gameList.games().size();
             int num = Integer.parseInt(params[0]);
             int gameID = gameList.games().get(num-1).gameID();
-            ChessGame game = gameList.games().get(num-1).game();
             server.joinGame(new JoinGameRequest(params[1].toUpperCase(), gameID), authToken);
-            //System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            //System.out.print(SET_TEXT_COLOR_BLACK);
-            //printGame(game, params[1], new ArrayList<>());
             return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.GAMEPLAY, authToken, gameID, params[1].toUpperCase());
         } catch (Exception e){
             if (params.length == 2){
