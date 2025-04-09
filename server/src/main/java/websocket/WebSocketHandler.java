@@ -55,7 +55,15 @@ public class WebSocketHandler {
         }
         else{
             connections.joinGame(command.getGameID(), visitorName);
-            var message = String.format("%s is in the game.", visitorName);
+            GameData gameData1 = gameService.getGame(command.getGameID());
+            String message;
+            boolean isWhitePlayer = gameData1.whiteUsername() != null && gameData1.whiteUsername().equals(visitorName);
+            boolean isBlackPlayer = gameData1.blackUsername() != null && gameData1.blackUsername().equals(visitorName);
+            if (!isWhitePlayer && !isBlackPlayer){
+                message = String.format("%s is observing the game.", visitorName);
+            }else{
+                message = String.format("%s joined the game.", visitorName);
+            }
             connections.broadcastToGame(command.getGameID(),visitorName, new NotificationMessage(message));
             var notification = new LoadGameMessage(gameData);
             connections.send(visitorName, notification);

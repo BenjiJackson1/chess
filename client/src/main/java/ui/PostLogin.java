@@ -107,11 +107,12 @@ public class PostLogin implements Client{
         try{
             var gameList = server.listGames(authToken);
             int num = Integer.parseInt(params[0]);
+            int gameID = gameList.games().get(num-1).gameID();
             ChessGame game = gameList.games().get(num-1).game();
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
             System.out.print(SET_TEXT_COLOR_BLACK);
             printGame(game, null, new ArrayList<>());
-            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.POSTLOGIN, authToken, -1, null);
+            return new ReplResponse("Game: " + gameList.games().get(num-1).gameName(), State.GAMEPLAY, authToken, gameID, "WHITE");
         } catch (Exception e){
             System.out.print(SET_TEXT_COLOR_WHITE);
             return new ReplResponse("Not a valid game ID!", State.POSTLOGIN, authToken, -1, null);
