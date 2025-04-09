@@ -83,6 +83,22 @@ public class WebSocketHandler {
                 connections.send(visitorName, new LoadGameMessage(gameData));
                 connections.broadcastToGame(command.getGameID(),visitorName, new NotificationMessage(String.format("%s made a move.", visitorName)));
                 connections.broadcastToGame(command.getGameID(),visitorName, new LoadGameMessage(gameData));
+                if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
+                    connections.send(visitorName, new NotificationMessage("BLACK is in check."));
+                    connections.broadcastToGame(gameData.gameID() ,visitorName, new NotificationMessage("BLACK is in check."));
+                }
+                if (gameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
+                    connections.send(visitorName, new NotificationMessage("WHITE is in check."));
+                    connections.broadcastToGame(gameData.gameID() ,visitorName, new NotificationMessage("WHITE is in check."));
+                }
+                if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                    connections.send(visitorName, new NotificationMessage("BLACK is in checkmate, WHITE wins!"));
+                    connections.broadcastToGame(gameData.gameID() ,visitorName, new NotificationMessage("BLACK is in checkmate, WHITE wins!"));
+                }
+                if (gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                    connections.send(visitorName, new NotificationMessage("WHITE is in checkmate, BLACK wins!"));
+                    connections.broadcastToGame(gameData.gameID() ,visitorName, new NotificationMessage("WHITE is in checkmate, BLACK wins!"));
+                }
             }
         } catch (Exception e){
             try{

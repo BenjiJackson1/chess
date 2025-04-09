@@ -36,22 +36,6 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcast(String excludeVisitorName, ServerMessage message) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (!c.visitorName.equals(excludeVisitorName)) {
-                    c.send(message.toString());
-                }
-            } else {
-                removeList.add(c);
-            }
-        }
-        for (var c : removeList) {
-            connections.remove(c.visitorName);
-        }
-    }
-
     public void joinGame(int gameID, String visitorName) {
         gamePlayers.computeIfAbsent(gameID, k -> ConcurrentHashMap.newKeySet()).add(visitorName);
         gameResigned.putIfAbsent(gameID, false);
@@ -76,7 +60,9 @@ public class ConnectionManager {
 
     public void broadcastToGame(int gameID, String excludeVisitorName, ServerMessage message) throws IOException {
         var players = gamePlayers.get(gameID);
-        if (players == null) return;
+        if (players == null) {
+            return;
+        }
 
         var removeList = new ArrayList<String>();
         for (var player : players) {
