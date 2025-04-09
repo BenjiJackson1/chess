@@ -27,19 +27,7 @@ public class ChessBoardPrinter {
                 System.out.print(" "+ j +" ");
                 for (int i = 1; i < 9; i++) {
                     ChessPosition pos = new ChessPosition(j, i);
-                    if ((i+j) % 2 == 0){
-                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
-                            System.out.print(SET_BG_COLOR_DARK_GREEN);
-                        } else{
-                            System.out.print(SET_BG_COLOR_BLUE);
-                        }
-                    }else{
-                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
-                            System.out.print(SET_BG_COLOR_GREEN);
-                        } else{
-                            System.out.print(SET_BG_COLOR_WHITE);
-                        }
-                    }
+                    System.out.print(squareColorGetter(i, j, pos, highlights));
                     System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(j,i))));
                 }
                 System.out.print(SET_BG_COLOR_LIGHT_GREY);
@@ -73,19 +61,7 @@ public class ChessBoardPrinter {
                 System.out.print(" "+ col +" ");
                 for (int i = 1; i < 9; i++) {
                     ChessPosition pos = new ChessPosition(9 - j, 9 - i);
-                    if ((i+j) % 2 == 0){
-                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
-                            System.out.print(SET_BG_COLOR_DARK_GREEN);
-                        } else{
-                            System.out.print(SET_BG_COLOR_BLUE);
-                        }
-                    }else{
-                        if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == pos.getRow() && p.getColumn() == pos.getColumn())) {
-                            System.out.print(SET_BG_COLOR_GREEN);
-                        } else{
-                            System.out.print(SET_BG_COLOR_WHITE);
-                        }
-                    }
+                    System.out.print(squareColorGetter(i, j, pos, highlights));
                     System.out.print(pieceGetter(chessGame.getBoard().getPiece(new ChessPosition(9-j,9-i))));
                 }
                 System.out.print(SET_BG_COLOR_LIGHT_GREY);
@@ -103,6 +79,22 @@ public class ChessBoardPrinter {
             System.out.print("   \n");
         }
         System.out.print(SET_TEXT_COLOR_WHITE);
+    }
+
+    private static String squareColorGetter(int i, int j, ChessPosition position, List<ChessPosition> highlights){
+        if ((i+j) % 2 == 0){
+            if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == position.getRow() && p.getColumn() == position.getColumn())) {
+                return SET_BG_COLOR_DARK_GREEN;
+            } else{
+                return SET_BG_COLOR_BLUE;
+            }
+        }else{
+            if (highlights != null && highlights.stream().anyMatch(p -> p.getRow() == position.getRow() && p.getColumn() == position.getColumn())) {
+                return SET_BG_COLOR_GREEN;
+            } else{
+                return SET_BG_COLOR_WHITE;
+            }
+        }
     }
 
     private static String pieceGetter(ChessPiece chessPiece){

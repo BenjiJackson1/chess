@@ -41,21 +41,8 @@ public class ConnectionManager {
         gameResigned.putIfAbsent(gameID, false);
     }
 
-    public void leaveGame(int gameID, String visitorName) {
-        if (gamePlayers.containsKey(gameID)) {
-            gamePlayers.get(gameID).remove(visitorName);
-            if (gamePlayers.get(gameID).isEmpty()) {
-                gamePlayers.remove(gameID);
-            }
-        }
-    }
-
     public void setGameOver(int gameID) {
         gameResigned.put(gameID, true);
-    }
-
-    public boolean isGameOver(int gameID) {
-        return gameResigned.getOrDefault(gameID, false);
     }
 
     public void broadcastToGame(int gameID, String excludeVisitorName, ServerMessage message) throws IOException {
