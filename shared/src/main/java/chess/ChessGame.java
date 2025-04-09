@@ -93,11 +93,6 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
         else{
-            ChessBoard testBoard = new ChessBoard(board);
-            testBoard.movePiece(move);
-            if (isInCheck(getTeamTurn())){
-                throw new InvalidMoveException();
-            }
             board.movePiece(move);
             if (getTeamTurn() == TeamColor.BLACK){
                 setTeamTurn(TeamColor.WHITE);

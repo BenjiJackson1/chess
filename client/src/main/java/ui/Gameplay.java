@@ -106,7 +106,6 @@ public class Gameplay implements Client{
         try{
             ws.move(authToken, gameID, new ChessMove(new ChessPosition(row,col), new ChessPosition(row1,col1), promotePiece));
         }catch (ResponseException e){
-
         }
         return new ReplResponse("", State.GAMEPLAY, authToken, gameID, teamColor);
     }
